@@ -4,6 +4,15 @@
 
 **NOT ARMED until stp sends GO.** The drop gate is already met (20 Oct rehearsal, label A). Frozen plan due Tue 27 Oct 2026, 18:00 UTC.
 
+## Run sheets (DRAFT)
+
+| File | Side |
+|---|---|
+| [GO-MAP.md](GO-MAP.md) | Overview, timeline, main-node decision, abort rules |
+| [GO-BUILD.md](GO-BUILD.md) | Build on the desk PC |
+| [GO-BOT.md](GO-BOT.md) | Grok Bot on the box (public nodes) |
+| [GO-MINI.md](GO-MINI.md) | Mini PC main node |
+
 ## Single clock
 
 | | UTC | Brussels (CET) |

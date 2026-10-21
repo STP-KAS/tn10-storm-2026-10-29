@@ -1,0 +1,51 @@
+> **DRAFT - basics only.** Locked after Kaspa Pulse reviews the repo and the mini PC node is live and synced; frozen plan due Tue 27 Oct 18:00 UTC.
+>
+> **Experimental. We are just trying this.** [Disclaimer](../DISCLAIMER.md) · [Home](../README.md) · [GO rules](README.md) · Kaspa Testnet-10 only.
+
+# GO-MINI · mini PC node · Thu 29 Oct 2026, 18:00–19:00 UTC (19:00–20:00 CET)
+
+The Beelink SER5 Pro mini PC (Ryzen 5 5500U, 16 GB, 480 GB SSD, Windows 11 Pro), node from [tn10-run-kit](https://github.com/STP-KAS/tn10-run-kit) `node/`. Run by Build over Remote Desktop from the desk PC (home LAN only). Overview: [GO-MAP.md](GO-MAP.md).
+
+**Not armed until stp sends GO.**
+
+## Role
+
+- **If synced:** main node, chain reader and coordinator, plus sender `mini` over **localhost Borsh 17210**.
+- **If not synced at T-2h (16:00 UTC):** monitor only. No sender, no coordinator; desk takes over ([GO-BUILD.md](GO-BUILD.md)).
+
+## Node settings (from tn10-run-kit)
+
+- kaspad 2.1.0 at `C:\kaspa\2.1.0`, data `C:\kaspa\data-tn10`, logs `C:\kaspa\logs`, task `TN10 kaspad`.
+- `--testnet --netsuffix=10 --utxoindex`. **No `--ram-scale`.**
+- RPC on this PC only: gRPC 16210, Borsh 17210, JSON 18210. **RPC never public.** P2P 16211 outbound only.
+
+## Pre-flight checklist
+
+- [ ] `C:\Users\Fermi\tn10-run-kit\node\check-node.ps1` shows running yes, **Synced: True**, past median time seconds behind, peers > 0 (paste real output).
+- [ ] Disk free **> 50 GB**.
+- [ ] No `--ram-scale` in the running command line.
+- [ ] Windows Update active hours cover 16:00–20:00 UTC; no pending restart. Power never sleeps.
+- [ ] Remote Desktop from desk works.
+- [ ] T-2h: NTP offset logged; coordinator can read the virtual chain over localhost.
+- [ ] Funding coins for the `mini` lane, own key. TODO: amount.
+- [ ] T-5 min: `control/STOP` absent.
+
+## Start / stop
+
+```powershell
+cd C:\Users\Fermi\tn10-run-kit\node
+.\check-node.ps1
+Start-ScheduledTask -TaskName 'TN10 kaspad'   # node start (if stopped)
+# TODO: coordinator + sender start commands (scripts not written yet)
+New-Item C:\Users\Fermi\tn10-storm-2026-10-29\control\STOP   # stop switch
+```
+
+Do not run `stop-node.ps1` on the day unless the node is broken; it kills kaspad hard.
+
+## Logging
+
+As [LOGGING.md](LOGGING.md): `submit.jsonl` (on disk), `minute.csv`, `phase.log` (coordinator), `post-end-mempool.csv` for the mini node 19:00–19:15.
+
+## Abort rules
+
+Node-dead rule (Kaspa Pulse), STALL 30 s, shape mismatch, network id check, STOP file, hard END. If the mini node goes dead mid-phase: TODO decide whether desk takes over as coordinator or the phase stops.
