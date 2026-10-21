@@ -6,6 +6,8 @@
 
 **History of every storm: [MASTER.md](https://github.com/STP-KAS/tn-master/blob/main/history/MASTER.md)** (in tn-master).
 
+**Companion repo: [tn10-covenant-contention-2026-10-29](https://github.com/STP-KAS/tn10-covenant-contention-2026-10-29).** The detailed covenant-contention build, the 20 Oct desk rehearsal and the full plan procedure live there; this repo is the standardized storm record and public summary.
+
 **Thank you first to Kaspa Pulse ([@gokugalax](https://x.com/gokugalax), [kaspapulse.com](https://kaspapulse.com)).** He reviewed our 20 Oct rehearsal and proposed the Thursday design: contention at 5 attempts/s only, parallel covenant families as the headline, sender-off gaps, minute-3 counting, per-lane senders, a post-END mempool watch and a written orphan definition. Every input: [credits/KASPA-PULSE.md](credits/KASPA-PULSE.md).
 
 ## Start, end, gate
