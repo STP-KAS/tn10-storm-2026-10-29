@@ -43,6 +43,13 @@ New-Item C:\Users\Fermi\tn10-storm-2026-10-29\control\STOP   # stop switch
 
 Do not run `stop-node.ps1` on the day unless the node is broken; it kills kaspad hard.
 
+## Before the start (mini)
+
+- Close Outlook and Edge; keep `--ram-scale=0.6` (only 11.9 GB visible, ~87% in use on 22 Oct).
+- Build launches the logger and checks it is writing.
+- Then close the Grok Bot app (frees ~400 MB). The mini doesn't need it during the test: kaspad and the logger run on their own and write to files.
+- After the run, reopen Grok Bot and send the log files to TN10 ops. Mid-run issues go via the desk PC or iPhone.
+
 ## Logging
 
 The mini monitors only and never touches GitHub (no Git, no GitHub login). It writes its logs to local files. After the run, stp attaches them from the Grok Bot app on the mini to TN10 ops, who checks them, removes IPs and commits them to this repo.
