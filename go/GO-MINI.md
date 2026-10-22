@@ -4,7 +4,7 @@
 
 # GO-MINI · mini PC node · Thu 29 Oct 2026, 18:00–19:00 UTC (19:00–20:00 CET)
 
-The Beelink SER5 Pro mini PC (Ryzen 5 5500U, 16 GB, 480 GB SSD, Windows 11 Pro), node from [tn10-run-kit](https://github.com/STP-KAS/tn10-run-kit) `node/`. Run by Build over Remote Desktop from the desk PC (home LAN only). Overview: [GO-MAP.md](GO-MAP.md).
+The Beelink SER5 Pro mini PC (Ryzen 5 5500U, 16 GB, 480 GB SSD, Windows 11 Pro), node from [tn10-run-kit](https://github.com/STP-KAS/tn10-run-kit) `node/`. Run by Grok Build on the mini itself (no Remote Desktop). stp talks to TN10 ops through the Grok Bot app on the mini; each message shows which machine it came from. Overview: [GO-MAP.md](GO-MAP.md).
 
 **Not armed until stp sends GO.**
 
@@ -25,7 +25,8 @@ The Beelink SER5 Pro mini PC (Ryzen 5 5500U, 16 GB, 480 GB SSD, Windows 11 Pro),
 - [ ] Disk free **> 50 GB**.
 - [ ] No `--ram-scale` in the running command line.
 - [ ] Windows Update active hours cover 16:00–20:00 UTC; no pending restart. Power never sleeps.
-- [ ] Remote Desktop from desk works.
+- [ ] Grok Build and the Grok Bot app work on the mini.
+- [ ] `check-node.ps1` output starts with the HOST/UTC line.
 - [ ] T-2h: NTP offset logged; coordinator can read the virtual chain over localhost.
 - [ ] Funding coins for the `mini` lane, own key. TODO: amount.
 - [ ] T-5 min: `control/STOP` absent.
@@ -43,6 +44,9 @@ New-Item C:\Users\Fermi\tn10-storm-2026-10-29\control\STOP   # stop switch
 Do not run `stop-node.ps1` on the day unless the node is broken; it kills kaspad hard.
 
 ## Logging
+
+The mini monitors only and never touches GitHub (no Git, no GitHub login). It writes its logs to local files. After the run, stp attaches them from the Grok Bot app on the mini to TN10 ops, who checks them, removes IPs and commits them to this repo.
+
 
 As [LOGGING.md](LOGGING.md): `submit.jsonl` (on disk), `minute.csv`, `phase.log` (coordinator), `post-end-mempool.csv` for the mini node 19:00–19:15.
 
