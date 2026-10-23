@@ -16,10 +16,12 @@ The Beelink SER5 Pro mini PC (Ryzen 5 5500U, 16 GB, 480 GB SSD, Windows 11 Pro),
 ## Node settings (from tn10-run-kit)
 
 - kaspad 2.1.0 at `C:\kaspa\2.1.0`, data `C:\kaspa\data-tn10`, logs `C:\kaspa\logs`, task `TN10 kaspad`.
-- `--testnet --netsuffix=10 --utxoindex`. **No `--ram-scale`.**
+- `--testnet --netsuffix=10 --utxoindex`. `--ram-scale=0.6` stays (the mini has about 12 GB of RAM).
 - RPC on this PC only: gRPC 16210, Borsh 17210, JSON 18210. **RPC never public.** P2P 16211 outbound only.
 
 **utxoindex (Kaspa Pulse advice, 23 Oct):** `--utxoindex` on both private nodes (mini and desk), because senders and builders query their own UTXOs and balances; without it `getUtxosByAddresses` and UTXO-changed notifications do not work. Enable it before test day: the first start builds the index, then restart once and verify the index is complete. Same kaspad version and same flags on both nodes, so a difference between them points at the network, not a setting. After verification, both nodes stay untouched until after END. A node used only by a miner does not need the index.
+
+**One operator for the mini:** only TN10 ops starts, stops or changes kaspad on the mini. Grok Build reads and logs only and does not relaunch kaspad. No miner runs on the mini (node only, stp 23 Oct).
 
 ## Pre-flight checklist
 
