@@ -19,6 +19,8 @@ The Beelink SER5 Pro mini PC (Ryzen 5 5500U, 16 GB, 480 GB SSD, Windows 11 Pro),
 - `--testnet --netsuffix=10 --utxoindex`. **No `--ram-scale`.**
 - RPC on this PC only: gRPC 16210, Borsh 17210, JSON 18210. **RPC never public.** P2P 16211 outbound only.
 
+**utxoindex (Kaspa Pulse advice, 23 Oct):** `--utxoindex` on both private nodes (mini and desk), because senders and builders query their own UTXOs and balances; without it `getUtxosByAddresses` and UTXO-changed notifications do not work. Enable it before test day: the first start builds the index, then restart once and verify the index is complete. Same kaspad version and same flags on both nodes, so a difference between them points at the network, not a setting. After verification, both nodes stay untouched until after END. A node used only by a miner does not need the index.
+
 ## Pre-flight checklist
 
 - [ ] `C:\Users\Fermi\tn10-run-kit\node\check-node.ps1` shows running yes, **Synced: True**, past median time seconds behind, peers > 0 (paste real output).

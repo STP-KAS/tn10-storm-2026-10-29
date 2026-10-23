@@ -19,6 +19,8 @@ You are **Grok Build** on stp's Windows desk PC. Overview: [GO-MAP.md](GO-MAP.md
 - Peer listen, Borsh and (at next restart, after mini takes over) gRPC on loopback only. UPnP off. No public RPC.
 - Keep at least 30 GB disk free and 4 GB RAM free.
 
+**utxoindex (Kaspa Pulse advice, 23 Oct):** `--utxoindex` on both private nodes (mini and desk), because senders and builders query their own UTXOs and balances; without it `getUtxosByAddresses` and UTXO-changed notifications do not work. Enable it before test day: the first start builds the index, then restart once and verify the index is complete. Same kaspad version and same flags on both nodes, so a difference between them points at the network, not a setting. After verification, both nodes stay untouched until after END. A node used only by a miner does not need the index.
+
 ## Pre-flight checklist
 
 - [ ] T-24h: node synced, version 2.1.0, network id `testnet-10` (report real output).
