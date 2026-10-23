@@ -30,3 +30,16 @@ Read by TN10 ops directly on both machines, 14 s apart (read-only).
 | Virtual DAA score | 603,631,513 | 603,631,729 |
 
 The desk's sink block is present on the mini (DAA 603,631,510). The 216-point DAA gap matches the 14 s between reads. **Result: same tip.** From 19:28 UTC the mini is cleared to be main node; the sender role still needs utxoindex (decided after Pulse's advice).
+
+## utxoindex on the mini (23 Oct 2026)
+
+Following PulseHawk's advice (utxoindex on both private nodes, enabled before test day, one restart, verified, then untouched until END).
+
+| Step | Time (UTC) | Result |
+|---|---|---|
+| Clean stop (Ctrl+C), start with `--utxoindex` | 19:06:05 | `Resyncing the utxoindex...` |
+| Index build finished (RPC servers up) | 19:48:24 | about 42 min, index 13.0 GB |
+| Clean restart | 20:00:34 | no new resync |
+| Check | 20:05 | `hasUtxoIndex: true`, `isSynced: true`, getUtxosByAddresses works |
+
+The mini is node only. Its test miner is stopped. Its flags are now the same as before plus `--utxoindex`, with `--ram-scale=0.6` kept because of its RAM. The mini now stays untouched until after END.
