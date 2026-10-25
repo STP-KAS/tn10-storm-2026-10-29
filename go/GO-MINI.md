@@ -56,6 +56,8 @@ Do not run `stop-node.ps1` on the day unless the node is broken; it kills kaspad
 
 ## Logging
 
+- **Optional, pending PulseHawk's OK:** passive hardware logger `tools/hwlog.ps1 -Label mini` from START−30 min to END+30 min. Read-only; does not touch kaspad; node stays untouched until END. Details and specs: [LOGGING.md](LOGGING.md#hwlog-labelcsv--hardware-logger-optional-pending-pulsehawks-ok).
+
 The mini monitors only and never touches GitHub (no Git, no GitHub login). It writes its logs to local files. After the run, stp attaches them from the Grok Bot app on the mini to TN10 ops, who checks them, removes IPs and commits them to this repo.
 
 
