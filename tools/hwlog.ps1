@@ -11,7 +11,7 @@
 param(
   [Parameter(Mandatory = $true)][string]$Label,
   [string]$OutFile = "",
-  [int]$DurationMinutes = 0,
+  [double]$DurationMinutes = 0,
   [int]$IntervalSeconds = 5
 )
 
@@ -35,11 +35,14 @@ Write-Host "hwlog: label=$Label out=$OutFile (Ctrl+C to stop)"
 try {
   while ((Get-Date) -lt $end) {
     $tick = Get-Date
-    $v = @{}
-    try {
-      (Get-Counter -Counter $counters -ErrorAction Stop).CounterSamples | ForEach-Object { $v[$_.Path.Split('\')[-1]] = $_.CookedValue }
-    } catch { }
-    $ws = ''; $kcpu = ''
+    $samples = @()
+    try { $samples = (Get-Counter -Counter $counters -ErrorAction SilentlyContinue).CounterSamples } catch { }
+    # Match by path suffix, case-insensitive; a missing sample becomes 0.
+    function cv([string]$suffix) {
+      $m = $samples | Where-Object { $_.Path.ToLowerInvariant().EndsWith($suffix.ToLowerInvariant()) } | Select-Object -First 1
+      if ($m) { [double]$m.CookedValue } else { 0.0 }
+    }
+    $ws = 0.0; $kcpu = 0.0
     $p = Get-Process -Name kaspad -ErrorAction SilentlyContinue | Select-Object -First 1
     if ($p) {
       $ws = [math]::Round($p.WorkingSet64 / 1MB, 1)
@@ -50,11 +53,12 @@ try {
       }
       $prevCpu = $p.TotalProcessorTime.TotalSeconds; $prevT = $now
     } else { $prevCpu = $null }
-    function f($x) { if ($null -eq $x -or $x -eq '') { '' } else { ([double]$x).ToString('0.##', $inv) } }
+    function f($x) { if ($null -eq $x) { '0' } else { ([double]$x).ToString('0.##', $inv) } }
     $row = @(
       (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ'), $Label,
-      (f $v['% processor time']), (f $v['available mbytes']),
-      (f $v['disk reads/sec']), (f $v['disk writes/sec']), (f $v['current disk queue length']),
+      (f (cv '\Processor(_Total)\% Processor Time')), (f (cv '\Memory\Available MBytes')),
+      (f (cv '\PhysicalDisk(_Total)\Disk Reads/sec')), (f (cv '\PhysicalDisk(_Total)\Disk Writes/sec')),
+      (f (cv '\PhysicalDisk(_Total)\Current Disk Queue Length')),
       (f $ws), (f $kcpu)
     ) -join ','
     Add-Content -Path $OutFile -Value $row -Encoding ascii
