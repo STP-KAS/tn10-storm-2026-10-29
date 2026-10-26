@@ -1,8 +1,8 @@
 > **Experimental. We are just trying this.** [Disclaimer](../DISCLAIMER.md) · [Home](../README.md)
 
-# Kaspa Pulse (@gokugalax, kaspapulse.com): inputs to this plan
+# PulseHawk (pulsehawk.io): inputs to this plan
 
-He counts our storms from the outside on his own two nodes. Contact goes through stp only; the bots never ping him.
+PulseHawk (pulsehawk.io) counts the storm independently from its own nodes. Contact goes through stp only; the bots never ping him.
 
 Carried-over method from earlier storms ([tn-master inputs](https://github.com/STP-KAS/tn-master/blob/main/credits/KASPA-PULSE.md)): plan first and publish it; 10-minute baseline; fixed steps; saturation defined before T0; node-dead rule; chain count right after END before pruning; accepted-in-blocks on two independent nodes per UTC minute by block time; ~56 tx/s TN10 base load; NTP at start and end; raw data next to the summary.
 
@@ -17,4 +17,6 @@ Carried-over method from earlier storms ([tn-master inputs](https://github.com/S
 | 7 | 21 Oct 2026 | Watch the **mempool for 15 minutes after END** to see whether orphans clear | Post-END watch window and `post-end-mempool.csv` | [plan/PLAN.md](../plan/PLAN.md), [go/LOGGING.md](../go/LOGGING.md) |
 | 8 | 21 Oct 2026 | Put our exact definition of **"orphan"** in the plan so both sides count the same | [docs/ORPHAN.md](../docs/ORPHAN.md) | [docs/ORPHAN.md](../docs/ORPHAN.md) |
 
-The frozen plan is due Tue 27 Oct 2026, 18:00 UTC. We ask him to review this public repo and send advice before that lock; we do not lock his changes unilaterally.
+| 9 | 26 Oct 2026 | Pre-freeze review: per-second `sec.csv`; fixed phase.log tokens and exact counted-minute ranges; own-miner state; `ntp.csv` for every stamping machine; contention plan superseded and one reject count; per-family `minute.csv` and covenant ids sent privately | All six applied | [go/LOGGING.md](../go/LOGGING.md), [plan/PLAN.md](../plan/PLAN.md), [plan/METRICS.md](../plan/METRICS.md), [docs/ORPHAN.md](../docs/ORPHAN.md) |
+
+The frozen plan is due Tue 27 Oct 2026, 18:00 UTC. We ask PulseHawk to review this public repo and send advice before that lock; we do not lock its suggestions unilaterally.

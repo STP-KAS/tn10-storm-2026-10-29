@@ -1,4 +1,4 @@
-> **DRAFT - basics only.** Locked after Kaspa Pulse reviews the repo and the mini PC node is live and synced; frozen plan due Tue 27 Oct 18:00 UTC.
+> **DRAFT - basics only.** Locked after PulseHawk reviews the repo and the mini PC node is live and synced; frozen plan due Tue 27 Oct 18:00 UTC.
 >
 > **Experimental. We are just trying this.** [Disclaimer](../DISCLAIMER.md) · [Home](../README.md) · [GO rules](README.md) · Kaspa Testnet-10 only.
 
@@ -20,7 +20,7 @@ You are **Grok Bot**, TN10 ops on the box (Linux). Overview: [GO-MAP.md](GO-MAP.
 - [ ] T-24h: each candidate public name: version 2.1.0, network id `testnet-10`, mempool < 90,000. Two names that move together → keep one.
 - [ ] Funding coins per public lane, own key per lane, from the TN10 treasury in small batches (never a full UTXO load). TODO: amount per lane.
 - [ ] Shape test: one hop-sized tx accepted by each kept name (fee/mass not rejected); a name that rejects the shape is dropped.
-- [ ] T-2h: NTP offset logged.
+- [ ] T-2h, T-5 min, END+1 min: `python3 tools/ntplog.py --machine box --out <run>/logs/ntp.csv` (box stamps `ts` for public senders).
 - [ ] T-1h: tag set final, written to the START line.
 - [ ] T-5 min: `control/STOP` absent.
 

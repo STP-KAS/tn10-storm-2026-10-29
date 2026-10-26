@@ -1,4 +1,4 @@
-> **DRAFT - basics only.** Locked after Kaspa Pulse reviews the repo and the mini PC node is live and synced; frozen plan due Tue 27 Oct 18:00 UTC.
+> **DRAFT - basics only.** Locked after PulseHawk reviews the repo and the mini PC node is live and synced; frozen plan due Tue 27 Oct 18:00 UTC.
 >
 > **Experimental. We are just trying this.** [Disclaimer](../DISCLAIMER.md) · [Home](../README.md) · [GO rules](README.md) · Kaspa Testnet-10 only.
 
@@ -19,7 +19,7 @@ The Beelink SER5 Pro mini PC (Ryzen 5 5500U, 16 GB, 480 GB SSD, Windows 11 Pro),
 - `--testnet --netsuffix=10 --utxoindex`. `--ram-scale=0.6` stays (the mini has about 12 GB of RAM).
 - RPC on this PC only: gRPC 16210, Borsh 17210, JSON 18210. **RPC never public.** P2P 16211 outbound only.
 
-**utxoindex (Kaspa Pulse advice, 23 Oct):** `--utxoindex` on both private nodes (mini and desk), because senders and builders query their own UTXOs and balances; without it `getUtxosByAddresses` and UTXO-changed notifications do not work. Enable it before test day: the first start builds the index, then restart once and verify the index is complete. Same kaspad version and same flags on both nodes, so a difference between them points at the network, not a setting. After verification, both nodes stay untouched until after END. A node used only by a miner does not need the index.
+**utxoindex (PulseHawk advice, 23 Oct):** `--utxoindex` on both private nodes (mini and desk), because senders and builders query their own UTXOs and balances; without it `getUtxosByAddresses` and UTXO-changed notifications do not work. Enable it before test day: the first start builds the index, then restart once and verify the index is complete. Same kaspad version and same flags on both nodes, so a difference between them points at the network, not a setting. After verification, both nodes stay untouched until after END. A node used only by a miner does not need the index.
 
 **One operator for the mini:** only TN10 ops starts, stops or changes kaspad on the mini. Grok Build reads and logs only and does not relaunch kaspad. No miner runs on the mini (node only, stp 23 Oct).
 
@@ -66,4 +66,4 @@ As [LOGGING.md](LOGGING.md): `submit.jsonl` (on disk), `minute.csv`, `phase.log`
 
 ## Abort rules
 
-Node-dead rule (Kaspa Pulse), STALL 30 s, shape mismatch, network id check, STOP file, hard END. If the mini node goes dead mid-phase: TODO decide whether desk takes over as coordinator or the phase stops.
+Node-dead rule (PulseHawk), STALL 30 s, shape mismatch, network id check, STOP file, hard END. If the mini node goes dead mid-phase: TODO decide whether desk takes over as coordinator or the phase stops.

@@ -1,4 +1,4 @@
-> **DRAFT - basics only.** Locked after Kaspa Pulse reviews the repo and the mini PC node is live and synced; frozen plan due Tue 27 Oct 18:00 UTC.
+> **DRAFT - basics only.** Locked after PulseHawk reviews the repo and the mini PC node is live and synced; frozen plan due Tue 27 Oct 18:00 UTC.
 >
 > **Experimental. We are just trying this.** [Disclaimer](../DISCLAIMER.md) · [Home](../README.md) · [GO rules](README.md) · Kaspa Testnet-10 only.
 
@@ -19,7 +19,7 @@ You are **Grok Build** on stp's Windows desk PC. Overview: [GO-MAP.md](GO-MAP.md
 - Peer listen, Borsh and (at next restart, after mini takes over) gRPC on loopback only. UPnP off. No public RPC.
 - Keep at least 30 GB disk free and 4 GB RAM free.
 
-**utxoindex (Kaspa Pulse advice, 23 Oct):** `--utxoindex` on both private nodes (mini and desk), because senders and builders query their own UTXOs and balances; without it `getUtxosByAddresses` and UTXO-changed notifications do not work. Enable it before test day: the first start builds the index, then restart once and verify the index is complete. Same kaspad version and same flags on both nodes, so a difference between them points at the network, not a setting. After verification, both nodes stay untouched until after END. A node used only by a miner does not need the index.
+**utxoindex (PulseHawk advice, 23 Oct):** `--utxoindex` on both private nodes (mini and desk), because senders and builders query their own UTXOs and balances; without it `getUtxosByAddresses` and UTXO-changed notifications do not work. Enable it before test day: the first start builds the index, then restart once and verify the index is complete. Same kaspad version and same flags on both nodes, so a difference between them points at the network, not a setting. After verification, both nodes stay untouched until after END. A node used only by a miner does not need the index.
 
 ## Pre-flight checklist
 
@@ -51,7 +51,7 @@ As [LOGGING.md](LOGGING.md): `submit.jsonl` (stays on disk), `minute.csv`, `phas
 
 ## Abort rules
 
-Node-dead rule (Kaspa Pulse), network id check, STALL 30 s, shape mismatch, compute mass > 100,000, STOP file, hard END. No self-restart after STOP/END.
+Node-dead rule (PulseHawk), network id check, STALL 30 s, shape mismatch, compute mass > 100,000, STOP file, hard END. No self-restart after STOP/END.
 
 ## After END
 

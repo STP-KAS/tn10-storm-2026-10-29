@@ -27,7 +27,7 @@ Times are UTC first. Brussels moved from CEST (UTC+2) to CET (UTC+1) on Sun 25 O
 
 **What.** Several senders race to spend one covenant state output at the same time. Only one spend can win each hop. The next hop spends the output that winner created. The phase measures winners included on the virtual chain, conflict rejects, time from submit to inclusion (winners only), and state hops. Attempt rate and hop rate are different: extra attempts lose; they do not create extra hops.
 
-**Headline question (from Kaspa Pulse).** Does total hop rate scale with the number of covenant families run in parallel? Thursday runs **1, then 2, then 4 families** at a fixed **5 attempts/s per sender**, with the main sender off for 5 minutes between steps. That replaces the old rising-attempt step table (1/2/5/10).
+**Headline question (suggested by PulseHawk).** Does total hop rate scale with the number of covenant families run in parallel? Thursday runs **1, then 2, then 4 families** at a fixed **5 attempts/s per sender**, with the main sender off for 5 minutes between steps. That replaces the old rising-attempt step table (1/2/5/10).
 
 **Why.** The 20 Oct rehearsal (label A) showed one covenant chain moves at about one hop per inclusion time, roughly **0.7 hops/s**, no matter how hard we hit it. Raising attempts from 5 to 20/s per sender raised already-spent and orphan rejects; it did not raise the hop rate. Parallel families are the next countable question.
 
@@ -41,7 +41,7 @@ Kaspa Testnet-10 only. KCC-20 is **Last Call, moving to Final** ([kaspanet/kccs#
 | [docs/BACKGROUND.md](docs/BACKGROUND.md) | What a covenant hop is, in plain words; follow-output-0; why #1152 is not needed |
 | [docs/ORPHAN.md](docs/ORPHAN.md) | Exact shared definition of "orphan" so both sides count the same |
 | [plan/PLAN.md](plan/PLAN.md) | Thursday phase design: families, rates, gaps, counting rules, nodes, stop |
-| [plan/METRICS.md](plan/METRICS.md) | What to measure and how; compare with Kaspa Pulse's block count |
+| [plan/METRICS.md](plan/METRICS.md) | What to measure and how; compare with PulseHawk's block count |
 | [go/README.md](go/README.md) | Shared rules, the single clock (T0), roles, how GO works |
 | [go/LOGGING.md](go/LOGGING.md) | Every log file and column |
 | [go/GO-MAP.md](go/GO-MAP.md) | DRAFT GO overview: who does what, timeline, abort rules |
@@ -51,7 +51,7 @@ Kaspa Testnet-10 only. KCC-20 is **Last Call, moving to Final** ([kaspanet/kccs#
 | [logs/](logs/README.md) | Rehearsal baseline now; Thursday results after END |
 | [logs/REHEARSAL-2026-10-20.md](logs/REHEARSAL-2026-10-20.md) | Desk rehearsal report (gate evidence, label A) |
 | [logs/rehearsal-2026-10-20.csv](logs/rehearsal-2026-10-20.csv) | Per-minute counts from the rehearsal (counts only) |
-| [credits/KASPA-PULSE.md](credits/KASPA-PULSE.md) | Every input from Kaspa Pulse (@gokugalax, kaspapulse.com) |
+| [credits/KASPA-PULSE.md](credits/KASPA-PULSE.md) | Every input from PulseHawk (pulsehawk.io) |
 
 ## Results
 

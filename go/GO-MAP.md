@@ -1,4 +1,4 @@
-> **DRAFT - basics only.** Locked after Kaspa Pulse reviews the repo and the mini PC node is live and synced; frozen plan due Tue 27 Oct 18:00 UTC.
+> **DRAFT - basics only.** Locked after PulseHawk reviews the repo and the mini PC node is live and synced; frozen plan due Tue 27 Oct 18:00 UTC.
 >
 > **Experimental. We are just trying this.** [Disclaimer](../DISCLAIMER.md) · [Home](../README.md) · [GO rules](README.md) · Kaspa Testnet-10 only.
 
@@ -6,7 +6,7 @@
 
 One page: who does what, and when. Each side has its own run sheet: [GO-BUILD.md](GO-BUILD.md) (desk PC), [GO-BOT.md](GO-BOT.md) (box), [GO-MINI.md](GO-MINI.md) (mini PC). Shared rules: [README.md](README.md). Columns: [LOGGING.md](LOGGING.md). Design: [plan/PLAN.md](../plan/PLAN.md). Detailed build and rehearsal: [tn10-covenant-contention-2026-10-29](https://github.com/STP-KAS/tn10-covenant-contention-2026-10-29).
 
-Design inputs from Kaspa Pulse ([@gokugalax](https://x.com/gokugalax), [kaspapulse.com](https://kaspapulse.com)): 5 attempts/s, parallel families as the headline, sender-off gaps, minute-3 counting, per-lane senders, post-END mempool watch, orphan definition, node-dead rule.
+PulseHawk (pulsehawk.io) counts the storm independently from its own nodes. Design inputs from PulseHawk ([pulsehawk.io](https://pulsehawk.io)): 5 attempts/s, parallel families as the headline, sender-off gaps, minute-3 counting, per-lane senders, post-END mempool watch, orphan definition, node-dead rule.
 
 ## Who does what
 
@@ -15,8 +15,8 @@ Design inputs from Kaspa Pulse ([@gokugalax](https://x.com/gokugalax), [kaspapul
 | **Mini** | Beelink SER5 Pro (mini PC) | kaspad 2.1.0 from tn10-run-kit, `--utxoindex` | **Main node + coordinator + sender `mini`** over localhost Borsh 17210, once synced |
 | **Build** | stp's desk PC | desk kaspad 2.1.0 `--utxoindex` | Sender `desk`. **Chain reader + coordinator only if mini is not synced** (fallback) |
 | **Bot** | the box (Linux) | none; public TN10 resolver nodes | Senders tagged per public name (`muon`, `boson`, …), public-node checks, logging, control watch |
-| **stp** | desk | — | Sends GO, holds the STOP switch, only contact with Kaspa Pulse |
-| **Kaspa Pulse** | his own two nodes | — | Independent accepted-in-blocks count (through stp only) |
+| **stp** | desk | — | Sends GO, holds the STOP switch, only contact with PulseHawk |
+| **PulseHawk** | its own nodes | — | Counts the storm independently from its own nodes (through stp only) |
 
 ## Main-node decision (T-2h, 16:00 UTC)
 
@@ -29,7 +29,7 @@ Design inputs from Kaspa Pulse ([@gokugalax](https://x.com/gokugalax), [kaspapul
 | When (UTC) | CET | What |
 |---|---|---|
 | Wed 28 Oct 18:00 (T-24h) | 19:00 | All sides: node versions 2.1.0, testnet-10, synced; funding coins per lane checked; Windows Update active hours set on desk + mini |
-| Thu 16:00 (T-2h) | 17:00 | Main-node decision (above). NTP check on all three machines (`ntp` line in phase.log) |
+| Thu 16:00 (T-2h) | 17:00 | Main-node decision (above). NTP rows for desk, mini, box in `ntp.csv` (also 17:55 and 19:01) |
 | Thu 17:00 (T-1h) | 18:00 | Public-node check (version 2.1.0, network id testnet-10, mempool < 90,000, drop mirrors). Tag set written |
 | Thu 17:30 | 18:30 | Genesis submits per family (4 families, each own key + launch path) |
 | Thu **17:50** | 18:50 | Every genesis included on the main node's virtual chain |
@@ -44,7 +44,7 @@ Design inputs from Kaspa Pulse ([@gokugalax](https://x.com/gokugalax), [kaspapul
 | 19:00–19:15 | 20:00–20:15 | Post-END mempool watch, `post-end-mempool.csv` |
 | after 19:15 | after 20:15 | Counts, scan for keys/addresses/IPs/txids, push counts-only files to `logs/` |
 
-**Counting:** from minute 3 of each 15-minute ON step (18:03, 18:23, 18:43). 3a+3b give 20 minutes at 4 families.
+**Counting:** from minute 3 of each 15-minute ON step: 18:03:00–18:14:59, 18:23:00–18:34:59, 18:43:00–18:59:59 UTC (3a+3b together: 17 counted of 20 minutes at 4 families). Clean minutes only (`sec.csv`).
 
 ## Abort / stop rules (all sides)
 

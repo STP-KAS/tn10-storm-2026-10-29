@@ -4,7 +4,7 @@
 
 ## Headline
 
-**Total hop rate vs number of covenant families.** Per ON step (count from minute 3):
+**Total hop rate vs number of covenant families.** Per ON step, counted minutes only (exact ranges in [go/LOGGING.md](../go/LOGGING.md#counted-minutes-exact-utc): 18:03–18:14, 18:23–18:34, 18:43–18:59 UTC), clean minutes only (`sec.csv`):
 
 - hops per second, sum across families
 - hops per second, per family
@@ -12,7 +12,9 @@
 
 If total hop rate scales with families, that is evidence of parallel state on Kaspa (hypothesis; Thursday measures it).
 
-## Per UTC minute (every ON minute)
+## Per UTC minute and family (`minute.csv`, one row per minute and family)
+
+Every count below is **per family**; totals per minute are the sum over that minute's family rows.
 
 | Column | Meaning |
 |---|---|
@@ -25,13 +27,18 @@ If total hop rate scales with families, that is evidence of parallel state on Ka
 | `hops` | state transitions observed from those accepting blocks |
 | `include_p50_ms` / `include_p95_ms` | accepting header time minus submit ts, winners whose ts falls in that minute. Header time is the miner's clock, so it carries that miner's offset |
 | `seen_p50_ms` / `seen_p95_ms` | coordinator's local UTC time when it first sees the accepting block (`seen_utc`, logged next to the header time) minus submit ts; separates inclusion delay from miner clock offset |
+| `family` | family number of this row |
 | `families` | how many families were live that minute |
 
-Winners per minute should match hops per minute. Sent and ok will be larger.
+Winners per family-minute should match hops per family-minute. Sent and ok will be larger. **Every attempt lands in exactly one of `ok` or one `rej_*` column**, so `sent = ok + sum(rej_*)` holds for every row.
 
-## Cross-check with Kaspa Pulse
+## Per UTC second (`sec.csv`)
 
-Kaspa Pulse (@gokugalax, kaspapulse.com) counts transactions accepted in blocks on two independent nodes, per UTC minute, by block time. Compare his count with our `winners`. His counter includes TN10 base load (~56 tx/s without us) and cannot tell covenant hops from other traffic; the hop split comes from our logs.
+`senders_target`, `senders_on`, `sent`, `ok` per second, 17:55–19:00 UTC. A minute is clean only when all planned senders were on for all 60 seconds.
+
+## Cross-check with PulseHawk
+
+PulseHawk (pulsehawk.io) counts the storm independently from its own nodes. It counts transactions accepted in blocks per UTC minute, by block time. Compare its count with our `winners`. Its counter includes TN10 base load (~56 tx/s without us); with the covenant id of each family (sent privately by stp, see [LOGGING.md](../go/LOGGING.md#private-log-never-pushed)) it can count each family on its own nodes. `MINER` lines in `phase.log` mark changes in our own hashrate.
 
 ## Post-END (19:00–19:15 UTC)
 

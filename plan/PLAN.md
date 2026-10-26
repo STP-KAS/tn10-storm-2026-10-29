@@ -4,7 +4,7 @@
 
 Several senders spend one covenant state output at the same time. Only one spend can win each hop. The next hop spends the output that winner created.
 
-**Headline (Kaspa Pulse):** does total hop rate scale with the number of covenant families run in parallel? Thursday runs **1, then 2, then 4 families** at a fixed **5 attempts/s per sender**. That replaces the old rising-attempt step table (1 / 2 / 5 / 10).
+**Headline (suggested by PulseHawk):** does total hop rate scale with the number of covenant families run in parallel? Thursday runs **1, then 2, then 4 families** at a fixed **5 attempts/s per sender**. That replaces the old rising-attempt step table (1 / 2 / 5 / 10).
 
 Attempt rate and hop rate are different. Extra attempts lose. They do not create extra hops. The 20 Oct rehearsal measured that (label A): ~0.7 hops/s at every attempt rate. See [logs/REHEARSAL-2026-10-20.md](../logs/REHEARSAL-2026-10-20.md).
 
@@ -20,7 +20,7 @@ All times UTC. Brussels is CET (UTC+1) on these dates.
 | END | Thu 29 Oct 19:00 | 20:00 |
 | Post-END mempool watch | 19:00–19:15 | 20:00–20:15 |
 
-Frozen plan due by the drop gate. Contact with Kaspa Pulse goes through stp only.
+Frozen plan due by the drop gate. Contact with PulseHawk goes through stp only. PulseHawk (pulsehawk.io) counts the storm independently from its own nodes.
 
 ## Drop gate: already met (label A)
 
@@ -43,11 +43,11 @@ Contention runs at **5 attempts per second per sender** only. Same winners as hi
 | 3a | 18:40:00 – 18:54:59.999 | **4** | 5 | ON |
 | 3b | 18:55:00 – 18:59:59.999 | **4** (hold) | 5 | ON |
 
-- **Count from minute 3** of each 15-minute ON step, so ramp-up stays out of the numbers.
+- **Count from minute 3** of each 15-minute ON step, so ramp-up stays out of the numbers. Counted minutes, exact UTC: **18:03:00–18:14:59**, **18:23:00–18:34:59**, **18:43:00–18:59:59** (3a and 3b together). A counted minute is clean only when all planned senders were on for all 60 seconds (`logs/sec.csv`).
 - **Hold the top step for two phases** (3a and 3b) to get clean peak minutes. 3b is the last 5 minutes before END; together with 3a that is 20 minutes at 4 families.
 - **Main sender OFF for 5 minutes between steps**, so we see how fast the network clears, not only how it holds.
 - Each family is its own genesis on its own launch path. Families do not share a minter outpoint. Total hop rate = sum of per-family hops.
-- Genesis for every family that will run is included before 17:50 UTC. If any required genesis is missing at 17:55 UTC, that family is dropped from the tag set and the phase log says so. If no family is ready, the phase does not start.
+- Genesis for every family that will run is included before 17:50 UTC. If any required genesis is missing at 17:55 UTC, that family is dropped and the phase log says so (`FAMILY_DROP family=N reason=no_genesis`). The public `GENESIS` line carries the family number only; covenant ids stay in the private log and go to PulseHawk privately from stp by 17:55 UTC. If no family is ready, the phase does not start.
 
 ### Per-lane senders
 
@@ -55,7 +55,7 @@ Each app lane has its **own sender address** and its **own target rate**, so lan
 
 ### Orphan definition
 
-Written in full at [docs/ORPHAN.md](../docs/ORPHAN.md). Short form: an orphan = a mempool-accepted hop whose parent is not yet on the virtual chain. Our builder never submits a child before its parent is included, and stalls/stops if a mempool ack has no inclusion within 30 s.
+Written in full at [docs/ORPHAN.md](../docs/ORPHAN.md). Short form: an orphan = a hop attempt whose parent is not yet on the virtual chain; the node answers with an orphan reject and it is counted once, under `rej_orphan`. Our builder never submits a child before its parent is included, and stalls/stops if a mempool ack has no inclusion within 30 s.
 
 ### Post-END mempool watch
 
@@ -63,11 +63,13 @@ From END to END+15 minutes, no new attempts. Watch the main node's mempool size 
 
 ## Nodes
 
-- **Desk:** one rusty-kaspa 2.1.0 node, Testnet-10, UTXO index on, default ram scale. Leave that process up. Do not start a second kaspad on the desk. Do not wipe its app directory. At the next restart (after the mini PC has taken over as the main node), bind gRPC to loopback only. Peer listen stays on loopback. Borsh stays on loopback. UPnP stays off.
-- **Mini PC:** expected around 22 Oct 2026. It becomes the main node when all of these are true: rusty-kaspa 2.1.0, Testnet-10, UTXO index on, default ram scale, synced, and the coordinator can read its virtual chain. Until then the desk node is the chain reader. After the handover the desk node stays up as one sender target.
+- **Desk:** one rusty-kaspa 2.1.0 node, Testnet-10, UTXO index on, default ram scale, `--rpcmaxclients=24`. Leave that process up. Do not start a second kaspad on the desk. Do not wipe its app directory. Since the 26 Oct restart every listener (gRPC/wRPC, peer, Borsh) is on loopback only. UPnP stays off.
+- **Mini PC:** live since 22 Oct 2026 (rusty-kaspa 2.1.0, Testnet-10, UTXO index on, `--ram-scale=0.6 --async-threads=8`, all listeners on loopback). It becomes the main node when it is synced and the coordinator can read its virtual chain (checked at T−2h). Until then the desk node is the chain reader. After the handover the desk node stays up as one sender target.
 - **Public submits:** wRPC Borsh on Testnet-10 hostnames. Candidate set: muon-10.kaspa.blue, boson-10.kaspa.red, electron-10.kaspa.blue, neutrino-10.kaspa.stream, vector-10.kaspa.green. Some of those names have returned the same figures and may be one backend. Before the phase, keep a public name only when its version is 2.1.0, its network id is testnet-10, and its mempool size is under 90,000. If two names move together, use one of them. A public node at or above 90,000 mempool entries is skipped for the rest of the phase (ram-scale 0.1 caps a pool at 100,000 and the next insert can panic the process).
 
-Every connection aborts unless the network id is `testnet-10`.
+Every connection aborts unless the network id is `testnet-10`. A skipped node logs `NODE_SKIP node=<tag> reason=mempool_90k`; a node dropped for the hop shape logs `NODE_DROP node=<tag> reason=redeem_shape`.
+
+**Own miner:** our box runs one CPU miner (`stp bot`, 3 workers, mining through public TN10 nodes) and it keeps running through the window; no miner runs on the mini or the desk (desk checked 26 Oct). `phase.log` records `MINER state=on|off workers=N miner=<label>` at T0 and at every change, with the UTC second.
 
 The Thursday target is desk, mini, and up to three public names. The phase still runs if mini is late, as long as the drop gate has passed and at least two nodes are connected. The phase log records the tag set and the rate in the start line.
 
@@ -101,13 +103,13 @@ Do not submit the child before the parent is on the virtual chain. If a mempool 
 
 One process per node. Tags: `desk`, `mini` (only after it is the main node), and one tag per public name that survived the mirror check (`muon`, `boson`, …).
 
-Each sender is a token bucket at 5 attempts/s, aligned to the UTC second. One attempt is one fully built transaction handed to that sender's node. During the 5-minute gaps every sender builds nothing.
+The public-node senders run on the box, so the box stamps `ts` for them; `desk` and `mini` stamp their own. Each sender is a token bucket at 5 attempts/s, aligned to the UTC second. One attempt is one fully built transaction handed to that sender's node. During the 5-minute gaps every sender builds nothing.
 
 ## Logging
 
-The run directory is outside this repo. Columns and files: [go/LOGGING.md](../go/LOGGING.md). After END, `minute.csv` and `phase.log` may be added here only after a scan finds no key, seed, address, IP or transaction id. `submit.jsonl` stays on disk.
+The run directory is outside this repo. Columns and files: [go/LOGGING.md](../go/LOGGING.md). After END, the counts-only files listed in LOGGING.md (`minute.csv`, `sec.csv`, `ntp.csv`, `phase.log`, `post-end-mempool.csv`, hwlog CSVs) may be added here only after a scan finds no key, seed, address, IP, transaction id, hostname or user path. `submit.jsonl` and the private genesis log stay on disk. Clocks: `logs/ntp.csv` for desk, mini and box at 16:00, 17:55 and 19:01 UTC; an offset over 100 ms is logged as is.
 
-Kaspa Pulse's count is transactions he sees in blocks. Compare his count with `winners`. `sent` and `ok` are local submit results. This plan does not message him.
+PulseHawk's count is transactions it sees in blocks. Compare that count with `winners`. `sent` and `ok` are local submit results; every attempt lands in exactly one of `ok` or one `rej_*` column, so `sent = ok + sum(rej_*)` per minute. This plan does not message PulseHawk.
 
 ## Stop
 
@@ -116,12 +118,12 @@ Two switches, both checked before every attempt.
 1. **Stop switch:** a file `control/STOP` in the run directory. Creating it stops every sender. Phase log: `reason=STOP`.
 2. **Hard stop:** END, 2026-10-29T19:00:00.000Z, even if STOP was never created. Phase log: `reason=END`.
 
-Whichever fires first is the one recorded. No sender restarts itself. An attempt already on the wire is logged, and nothing new is built. Node-dead rule: a sender stops when its node is dead (RPC failing, not synced, lag over 60 s, or DAA score still for 30 s). A failed submit is a reject, never "sent".
+Whichever fires first is the one recorded. No sender restarts itself. An attempt already on the wire is logged, and nothing new is built. Node-dead rule: a sender stops when its node is dead (RPC failing, not synced, lag over 60 s, or DAA score still for 30 s), logged as `SENDER_OFF sender=<label> reason=node_dead`; a manual restart logs `SENDER_ON sender=<label>`. A failed submit is a reject, never "sent".
 
 ## Risks
 
 - A builder pointed at an old launch path would move a covenant this test does not own. The path allow-list is the family set for this phase, and each key is new.
-- Counting a mempool ack as a hop repeats an old mix-up with Pulse's block count. Hops move on the virtual chain only.
+- Counting a mempool ack as a hop repeats an old mix-up with PulseHawk's block count. Hops move on the virtual chain only.
 - Submitting the next hop before the parent is included produces orphan rejects and can stall the chain of state. The 30 second stall stop is the bound.
 - Public nodes may reject the large redeem on fee or mass, or may be an older server. A node that rejects the shape is dropped from the tag set. If no public node accepts it, Thursday is desk and mini only, and the phase log says so.
 - One copied transaction can sit in each mempool until a block. That is one entry per node per hop, not one entry per attempt. The 90,000 pause is still on.
@@ -131,4 +133,4 @@ Whichever fires first is the one recorded. No sender restarts itself. An attempt
 
 ## Out of scope
 
-No mainnet. No spend of an existing covenant. No kaspad upgrade. No tag, release, or upstream comment. No code in this commit.
+No mainnet. No spend of an existing covenant. No kaspad upgrade. No tag, release, or upstream comment. No sender or coordinator code in this repo (only the passive loggers in `tools/`).

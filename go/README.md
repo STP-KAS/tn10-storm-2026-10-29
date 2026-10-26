@@ -30,11 +30,11 @@ No new attempt is built at or after END.
 | **Coordinator** | Watches the main node's virtual chain; publishes the current outpoint per family; writes `phase.log`; enforces STALL (30 s) and STOP / END |
 | **Senders** | One process per node tag (`desk`, `mini`, public names). Each holds its own funding coins. Token bucket at 5 attempts/s during ON steps; nothing during gaps |
 | **Chain reader** | Main node (mini PC when synced; desk until then). Source of winners and hops |
-| **Kaspa Pulse** | Independent accepted-in-blocks count on his own two nodes. Contact through stp only |
+| **PulseHawk** | Counts the storm independently from its own nodes. Contact through stp only |
 
 ## Rules carried over (do not change without a logged deviation)
 
-1. **Node-dead rule** (Kaspa Pulse). A sender stops when its node is dead: RPC failing, not synced, lag over 60 s, or DAA score still for 30 s. A failed submit is a reject, never "sent".
+1. **Node-dead rule** (PulseHawk). A sender stops when its node is dead: RPC failing, not synced, lag over 60 s, or DAA score still for 30 s. A failed submit is a reject, never "sent".
 2. **90,000-mempool public-node guard.** A public name at or above 90,000 mempool entries is skipped for the rest of the phase.
 3. **Network id.** Every connection aborts unless the network id is `testnet-10`.
 4. **Follow output 0.** Advance only after virtual-chain inclusion of a hop whose output 0 has a covenant binding and the same KAS value. Shape mismatch = stop.
