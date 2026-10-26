@@ -49,9 +49,22 @@ Contention runs at **5 attempts per second per sender** only. Same winners as hi
 - Each family is its own genesis on its own launch path. Families do not share a minter outpoint. Total hop rate = sum of per-family hops.
 - Genesis for every family that will run is included before 17:50 UTC. If any required genesis is missing at 17:55 UTC, that family is dropped and the phase log says so (`FAMILY_DROP family=N reason=no_genesis`). The public `GENESIS` line carries the family number only; covenant ids stay in the private log and go to PulseHawk privately from stp by 17:55 UTC. If no family is ready, the phase does not start.
 
-### Per-lane senders
+### Lanes and senders (decided 26 Oct)
 
-Each app lane has its **own sender address** and its **own target rate**, so lanes stay separable in the count. Lane tags and rates are written into the START line of `phase.log`. A lane that shares a funding key with another lane is a stop.
+- **One sender per node tag:** `desk`; `mini` (only if the mini is the main node at T−2h); **at most 2 public tags** that pass the mirror check, proposed `vector` plus one of `muon`/`boson` (`boson`, `neutrino` and `electron` count as one backend).
+- **Every lane contends on every live family** (1, then 1–2, then 1–4) at 5 attempts/s per family per lane.
+- **Each lane has its own funding key**, pre-split from its own coins, never shared. A lane that shares a funding key with another lane is a stop. Lane tags and rates are written into the START line of `phase.log`.
+- **Genesis owner:** the coordinator on the main node (mini by default, desk if the desk is main) creates the genesis for families 1–4. Covenant ids go only in the private log.
+- **Minter outpoint:** the coordinator publishes `{family, outpoint, seen_utc}` privately to the `desk` and `mini` senders. Box senders (public nodes; the private nodes are loopback-only, no tunnel) find the outpoint themselves from their own node's virtual chain; their discovery time is logged as `seen_utc` with `source=self`. Their losses count as `rej_already_spent`.
+- **Coordinator failover:** if the mini dies, the desk coordinator takes over (logged with `SENDER_OFF` / `NODE_*` and `MAIN node=desk reason=mini_dead`).
+
+### KNS lane (background, not counted)
+
+A separate background lane: `family=0`, sender `kns`, own minute file (`logs/minute-kns.csv`), **not counted in hops**. 60 names/min, max 16 in flight, off during both 5-minute gaps, not before 18:03 UTC, hard END 19:00 UTC. Node: `vector`, with `muon` as spare, never a tag a covenant sender is using. **Fee: the one explicit exception to the one-fee rule:** capped auto fee at 1.5× priority, max 1 tKAS per name; it pauses instead of escalating. Starts on stp's GO in the kns tn10 chat plus a senders-stable signal from TN10 ops. Obeys STOP, the node-dead rule and the 90,000 guard.
+
+### Funding per lane (amounts only)
+
+From the 26 Oct desk dry run (P2W stand-in hop, 1 attempt/s per family, one lane): about **1 included hop/s per family**, include p50 1.2 s. Worst case one lane wins every hop: 15×1 + 15×2 + 20×4 = 125 family-minutes ≈ 7,500 hops × (≈0.009 tKAS fee at ~8,700 compute mass × 100 sompi/g + 0.2 tKAS token output) ≈ **1,600 tKAS per covenant lane**, pre-split into **≥ 100 coins of ~16 tKAS** (a coin is reusable once its change is included, ~1.2 s; ≤ 20 attempts/s per lane at 4 families). Genesis: a few tKAS minter per family plus fee, from the coordinator's own key. KNS lane: ≤ 2,820 names × ≤ 1 tKAS cap; fund ~300 tKAS and let it pause.
 
 ### Orphan definition
 
@@ -101,9 +114,9 @@ Do not submit the child before the parent is on the virtual chain. If a mempool 
 
 ## Senders
 
-One process per node. Tags: `desk`, `mini` (only after it is the main node), and one tag per public name that survived the mirror check (`muon`, `boson`, …).
+One process per node tag (see Lanes and senders above): `desk`, `mini` (only if main at T−2h), at most 2 public tags.
 
-The public-node senders run on the box, so the box stamps `ts` for them; `desk` and `mini` stamp their own. Each sender is a token bucket at 5 attempts/s, aligned to the UTC second. One attempt is one fully built transaction handed to that sender's node. During the 5-minute gaps every sender builds nothing.
+The public-node senders run on the box, so the box stamps `ts` for them; `desk` and `mini` stamp their own. Each sender is a token bucket at 5 attempts/s per live family, aligned to the UTC second. Scripts: [tools/storm/](../tools/storm/README.md). One attempt is one fully built transaction handed to that sender's node. During the 5-minute gaps every sender builds nothing.
 
 ## Logging
 

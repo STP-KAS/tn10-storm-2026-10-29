@@ -1,5 +1,3 @@
-> **DRAFT - basics only.** Locked after PulseHawk reviews the repo and the mini PC node is live and synced; frozen plan due Tue 27 Oct 18:00 UTC.
->
 > **Experimental. We are just trying this.** [Disclaimer](../DISCLAIMER.md) · [Home](../README.md) · [GO rules](README.md) · Kaspa Testnet-10 only.
 
 # GO-MINI · mini PC node · Thu 29 Oct 2026, 18:00–19:00 UTC (19:00–20:00 CET)
@@ -32,7 +30,7 @@ The Beelink SER5 Pro mini PC (Ryzen 5 5500U, 16 GB, 480 GB SSD, Windows 11 Pro),
 - [ ] Grok Build and the Grok Bot app work on the mini.
 - [ ] `check-node.ps1` output starts with the HOST/UTC line.
 - [ ] T-2h: NTP offset logged; coordinator can read the virtual chain over localhost.
-- [ ] Funding coins for the `mini` lane, own key. TODO: amount.
+- [ ] Funding coins for the `mini` lane, own key: ~1,600 tKAS pre-split into ≥ 100 coins, plus genesis coins for families 1–4 (coordinator).
 - [ ] T-5 min: `control/STOP` absent.
 
 ## Start / stop
@@ -41,7 +39,6 @@ The Beelink SER5 Pro mini PC (Ryzen 5 5500U, 16 GB, 480 GB SSD, Windows 11 Pro),
 cd <your-folder>\tn10-run-kit\node
 .\check-node.ps1
 Start-ScheduledTask -TaskName 'TN10 kaspad'   # node start (if stopped)
-# TODO: coordinator + sender start commands (scripts not written yet)
 New-Item <your-folder>\tn10-storm-2026-10-29\control\STOP   # stop switch
 ```
 
@@ -66,4 +63,4 @@ As [LOGGING.md](LOGGING.md): `submit.jsonl` (on disk), `minute.csv`, `phase.log`
 
 ## Abort rules
 
-Node-dead rule (PulseHawk), STALL 30 s, shape mismatch, network id check, STOP file, hard END. If the mini node goes dead mid-phase: TODO decide whether desk takes over as coordinator or the phase stops.
+Node-dead rule (PulseHawk), STALL 30 s, shape mismatch, network id check, STOP file, hard END. If the mini node goes dead mid-phase, the desk coordinator takes over (`MAIN node=desk reason=mini_dead`); start commands as in [GO-BUILD.md](GO-BUILD.md#start--stop) with `--label mini`.

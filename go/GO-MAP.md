@@ -1,5 +1,3 @@
-> **DRAFT - basics only.** Locked after PulseHawk reviews the repo and the mini PC node is live and synced; frozen plan due Tue 27 Oct 18:00 UTC.
->
 > **Experimental. We are just trying this.** [Disclaimer](../DISCLAIMER.md) · [Home](../README.md) · [GO rules](README.md) · Kaspa Testnet-10 only.
 
 # GO-MAP · Thu 29 Oct 2026, 18:00–19:00 UTC (19:00–20:00 CET)
@@ -14,7 +12,7 @@ PulseHawk (pulsehawk.io) counts the storm independently from its own nodes. Desi
 |---|---|---|---|
 | **Mini** | Beelink SER5 Pro (mini PC) | kaspad 2.1.0 from tn10-run-kit, `--utxoindex` | **Main node + coordinator + sender `mini`** over localhost Borsh 17210, once synced |
 | **Build** | stp's desk PC | desk kaspad 2.1.0 `--utxoindex` | Sender `desk`. **Chain reader + coordinator only if mini is not synced** (fallback) |
-| **Bot** | the box (Linux) | none; public TN10 resolver nodes | Senders tagged per public name (`muon`, `boson`, …), public-node checks, logging, control watch |
+| **Bot** | the box (Linux) | none; public TN10 resolver nodes | ≤ 2 public senders (`vector` + `muon` or `boson`), outpoint self-discovery, public-node checks, logging, control watch; KNS lane via kns tn10 |
 | **stp** | desk | — | Sends GO, holds the STOP switch, only contact with PulseHawk |
 | **PulseHawk** | its own nodes | — | Counts the storm independently from its own nodes (through stp only) |
 
@@ -58,7 +56,10 @@ PulseHawk (pulsehawk.io) counts the storm independently from its own nodes. Desi
 
 ## Open (to settle before the frozen plan)
 
-- TODO: which sender holds which lane/family (per-lane address + rate table).
-- TODO: how the coordinator on the mini publishes the current outpoint to desk and box senders (no public RPC; transport not chosen yet).
-- TODO: KNS lane: in or out on Thursday; if in, its own sender and rate.
-- TODO: mini PC sync status (unknown until Build reports).
+Settled 26 Oct (details in [plan/PLAN.md](../plan/PLAN.md#lanes-and-senders-decided-26-oct)):
+
+- **Lanes:** one sender per node tag (`desk`, `mini` if main, ≤ 2 public tags: `vector` + one of `muon`/`boson`); every lane contends on every live family at 5 att/s; own funding key per lane.
+- **Genesis:** the coordinator on the main node creates families 1–4; covenant ids private only.
+- **Outpoint:** coordinator → desk/mini senders privately; box senders self-discover from their own node (`seen_utc` source=self). Desk coordinator takes over if the mini dies.
+- **KNS lane:** in, as a background lane (`family=0`, sender `kns`, own minute file, not counted), 60 names/min from 18:03, off in gaps, node `vector` (spare `muon`), capped fee exception.
+- **Mini:** decided at T−2h (synced → main).

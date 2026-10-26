@@ -1,5 +1,3 @@
-> **DRAFT - basics only.** Locked after PulseHawk reviews the repo and the mini PC node is live and synced; frozen plan due Tue 27 Oct 18:00 UTC.
->
 > **Experimental. We are just trying this.** [Disclaimer](../DISCLAIMER.md) · [Home](../README.md) · [GO rules](README.md) · Kaspa Testnet-10 only.
 
 # GO-BUILD · desk PC · Thu 29 Oct 2026, 18:00–19:00 UTC (19:00–20:00 CET)
@@ -24,7 +22,7 @@ You are **Grok Build** on stp's Windows desk PC. Overview: [GO-MAP.md](GO-MAP.md
 ## Pre-flight checklist
 
 - [ ] T-24h: node synced, version 2.1.0, network id `testnet-10` (report real output).
-- [ ] Funding coins for the `desk` lane: own key, not shared with any other lane; enough for 1 h at 5 att/s plus genesis for any family you own. TODO: amount from real fee × mass.
+- [ ] Funding coins for the `desk` lane: own key, not shared with any other lane; ~1,600 tKAS pre-split into ≥ 100 coins (PLAN.md, Funding per lane); genesis coins too if the desk is main.
 - [ ] Windows Update active hours cover 16:00–20:00 UTC; no pending restart.
 - [ ] T-2h: NTP check (`w32tm /stripchart` or similar), offset logged.
 - [ ] T-2h: main-node decision read from GO-MAP; if fallback, coordinator armed on the desk node.
@@ -35,9 +33,12 @@ You are **Grok Build** on stp's Windows desk PC. Overview: [GO-MAP.md](GO-MAP.md
 Run directory: `<your-folder>\tn10-storm-2026-10-29`.
 
 ```powershell
-# TODO: sender start command (script not written yet)
-# TODO: coordinator start command (fallback only)
+cd <your-folder>\tn10-storm-kit          # tools/storm from this repo + SDK 2.1.0
+$env:STORM_CONFIG = "<your-folder>\tn10-storm-2026-10-29\config.json"   # private, outside any repo
+Start-Process node -ArgumentList "coordinator.mjs" -WindowStyle Hidden   # main node only
+Start-Process node -ArgumentList "sender.mjs --label desk --node ws://127.0.0.1:17210" -WindowStyle Hidden
 New-Item <your-folder>\tn10-storm-2026-10-29\control\STOP   # stop switch
+node aggregate.mjs   # after END: minute.csv, sec.csv, private submit.jsonl
 ```
 
 Senders stop by themselves at 19:00:00Z whatever time they were started.

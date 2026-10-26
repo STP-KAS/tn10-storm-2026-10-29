@@ -1,0 +1,19 @@
+{
+  "kaspa_sdk": "<your-folder>/tn10-storm-kit/sdk/kaspa/kaspa.js",
+  "run_dir": "<your-folder>/tn10-storm-run",
+  "main_node_url": "ws://127.0.0.1:17210",
+  "reference_node_url": "wss://<public-tn10-wrpc-borsh-node>",
+  "node_drive": "C:\\",
+  "fee_sompi_per_gram": 1,
+  "poll_ms": 250,
+  "stall_s": 30,
+  "senders": ["desk"],
+  "miners": [],
+  "families": [{ "family": 1, "lane_id": 0 }, { "family": 2, "lane_id": 0 }],
+  "sec_from_utc": "2026-10-29T17:59:00.000Z",
+  "family_check_utc": "2026-10-29T17:59:40.000Z",
+  "end_utc": "2026-10-29T19:00:00.000Z",
+  "schedule": [
+    { "step": "1", "from": "2026-10-29T18:00:00.000Z", "to": "2026-10-29T18:15:00.000Z", "families": 1, "rate": 5 }
+  ]
+}

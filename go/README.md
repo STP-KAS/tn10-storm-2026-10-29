@@ -4,7 +4,7 @@
 
 **NOT ARMED until stp sends GO.** The drop gate is already met (20 Oct rehearsal, label A). Frozen plan due Tue 27 Oct 2026, 18:00 UTC.
 
-## Run sheets (DRAFT)
+## Run sheets
 
 | File | Side |
 |---|---|
