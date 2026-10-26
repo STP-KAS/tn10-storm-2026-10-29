@@ -32,7 +32,7 @@ $inv = [Globalization.CultureInfo]::InvariantCulture
 $end = if ($DurationMinutes -gt 0) { (Get-Date).AddMinutes($DurationMinutes) } else { [datetime]::MaxValue }
 $prevCpu = $null; $prevT = $null
 
-Write-Host "hwlog: label=$Label out=$OutFile (Ctrl+C to stop)"
+Write-Host "hwlog: label=$Label out=$(Split-Path -Leaf $OutFile) (Ctrl+C to stop)"
 try {
   while ((Get-Date) -lt $end) {
     $tick = Get-Date
