@@ -44,7 +44,8 @@ Senders stop by themselves at 19:00:00Z whatever time they were started.
 
 ## Logging
 
-- **Optional, pending PulseHawk's OK:** passive hardware logger `tools/hwlog.ps1 -Label desk` from START−30 min to END+30 min. Read-only; does not touch kaspad; node stays untouched until END. Details and specs: [LOGGING.md](LOGGING.md#hwlog-labelcsv--hardware-logger-optional-pending-pulsehawks-ok).
+- **Optional, approved by PulseHawk:** passive hardware logger `tools/hwlog.ps1 -Label desk` from START−30 min to END+30 min. Read-only; does not touch kaspad; node stays untouched until END. Details and specs: [LOGGING.md](LOGGING.md#hwlog-labelcsv--hardware-logger-optional-approved-by-pulsehawk).
+- Logging pre-check: NTP synced to UTC (`w32tm /query /status`, `w32tm /resync`, stripchart vs time.windows.com/pool.ntp.org), offset < ~100 ms; no hostnames/IPs in anything published.
 
 As [LOGGING.md](LOGGING.md): `submit.jsonl` (stays on disk), `minute.csv`, `phase.log` (if coordinator), and `post-end-mempool.csv` for the desk node 19:00–19:15. Reason tokens only, never the raw node sentence.
 

@@ -3,7 +3,8 @@
   Passive hardware logger for the TN10 run (Thu 29 Oct 2026). Read-only.
 .DESCRIPTION
   Every IntervalSeconds (default 5) appends one CSV row with system and kaspad.exe
-  load. Uses only Get-Counter and Get-Process reads. Never starts, stops, signals
+  load. The 'label' column is the -Label you pass (desk/mini); the script never
+  records hostname, IP or username. Uses only Get-Counter and Get-Process reads. Never starts, stops, signals
   or reconfigures kaspad. Stop with Ctrl+C or -DurationMinutes.
 .EXAMPLE
   powershell -ExecutionPolicy Bypass -File .\hwlog.ps1 -Label desk -DurationMinutes 120
@@ -16,7 +17,7 @@ param(
 )
 
 if (-not $OutFile) { $OutFile = Join-Path (Get-Location) "hwlog-$Label.csv" }
-$header = 'utc,host,cpu_total_pct,ram_avail_mb,disk_reads_s,disk_writes_s,disk_queue,kaspad_ws_mb,kaspad_cpu_pct'
+$header = 'utc,label,cpu_total_pct,ram_avail_mb,disk_reads_s,disk_writes_s,disk_queue,kaspad_ws_mb,kaspad_cpu_pct'
 if (-not (Test-Path $OutFile)) { Set-Content -Path $OutFile -Value $header -Encoding ascii }
 
 $counters = @(

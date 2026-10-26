@@ -54,12 +54,18 @@ minute_utc,node,mempool_size
 
 `minute.csv`, `phase.log` and `post-end-mempool.csv` only after a scan finds no key, seed, address, IP or transaction id. `submit.jsonl` never.
 
-## `hwlog-<label>.csv` · hardware logger (OPTIONAL, pending PulseHawk's OK)
+## `hwlog-<label>.csv` · hardware logger (OPTIONAL, approved by PulseHawk)
 
 [`tools/hwlog.ps1`](../tools/hwlog.ps1) compares how a strong and a modest home node handle the same storm. **Passive and read-only:** it only reads Windows performance counters (`Get-Counter`) and `Get-Process`; it never starts, stops or reconfigures kaspad. The "nodes untouched until END" rule stays in force.
 
+Approved by PulseHawk (pulsehawk.io), independent measurement.
+
+**Pre-run (T-2h, both PCs):** in an admin prompt run `w32tm /query /status` and `w32tm /resync`, then `w32tm /stripchart /computer:time.windows.com /samples:5 /dataonly` (or `pool.ntp.org`). Target offset under ~100 ms; log it.
+
+- `-Label` is required (`desk` or `mini`) and is written to the `label` column instead of the computer name. The script never records hostname, IP or username.
+- Before publishing any log, scrub hostnames, IPs and private paths.
 - Runs from **START−30 min to END+30 min** (17:30–19:30 UTC, 18:30–20:30 CET), one instance per PC.
-- Every 5 s: UTC time, host label, total CPU %, available RAM (MB), disk reads/s, writes/s, queue length, kaspad working set (MB), kaspad CPU % (of all cores).
+- Every 5 s: UTC time, label, total CPU %, available RAM (MB), disk reads/s, writes/s, queue length, kaspad working set (MB), kaspad CPU % (of all cores).
 - Example: `cd C:\Users\Fermi\tn10-storm` then `powershell -ExecutionPolicy Bypass -File .\tools\hwlog.ps1 -Label desk -DurationMinutes 120` (label `mini` on the mini).
 
 | Node | CPU | RAM | Disk | kaspad |
