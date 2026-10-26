@@ -23,7 +23,8 @@ If total hop rate scales with families, that is evidence of parallel state on Ka
 | `rej_fee` / `rej_mass` / `rej_mempool_full` / `rej_route` / `rej_rpc` / `rej_other` | other rejects |
 | `winners` | our hops whose accepting-block header falls in that minute |
 | `hops` | state transitions observed from those accepting blocks |
-| `include_p50_ms` / `include_p95_ms` | accepting header time minus submit ts, winners whose ts falls in that minute |
+| `include_p50_ms` / `include_p95_ms` | accepting header time minus submit ts, winners whose ts falls in that minute. Header time is the miner's clock, so it carries that miner's offset |
+| `seen_p50_ms` / `seen_p95_ms` | coordinator's local UTC time when it first sees the accepting block (`seen_utc`, logged next to the header time) minus submit ts; separates inclusion delay from miner clock offset |
 | `families` | how many families were live that minute |
 
 Winners per minute should match hops per minute. Sent and ok will be larger.

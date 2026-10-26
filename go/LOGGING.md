@@ -23,10 +23,10 @@ Flush every line. Store the reason token, not the raw node sentence (that senten
 Counts only. One row per UTC minute. Header:
 
 ```text
-minute_utc,step,families,sent,ok,rej_already_spent,rej_orphan,rej_fee,rej_mass,rej_mempool_full,rej_route,rej_rpc,rej_other,winners,hops,include_p50_ms,include_p95_ms
+minute_utc,step,families,sent,ok,rej_already_spent,rej_orphan,rej_fee,rej_mass,rej_mempool_full,rej_route,rej_rpc,rej_other,winners,hops,include_p50_ms,include_p95_ms,seen_p50_ms,seen_p95_ms
 ```
 
-`sent` = attempts. `ok` = mempool acceptances. `winners` = our hops whose accepting-block header falls in that minute. `hops` = state transitions from those accepting blocks. `include_p50_ms` / `include_p95_ms` = accepting header time minus `ts`, for winners whose `ts` falls in that minute. A minute with no winner leaves those two cells empty. Gap minutes may be omitted or logged with `sent=0`.
+`sent` = attempts. `ok` = mempool acceptances. `winners` = our hops whose accepting-block header falls in that minute. `hops` = state transitions from those accepting blocks. `include_p50_ms` / `include_p95_ms` = accepting header time minus `ts`, for winners whose `ts` falls in that minute. A minute with no winner leaves those two cells empty. **Clock note:** the accepting header time comes from the miner's clock, so these values also carry that miner's clock offset. To separate the two, the coordinator also records `seen_utc`: its own local UTC time (NTP-synced) when it first sees the accepting block, logged next to `accept_header_utc` in `submit.jsonl`, and `seen_p50_ms` / `seen_p95_ms` (= `seen_utc` minus `ts`) as two extra columns at the end of `minute.csv`. Gap minutes may be omitted or logged with `sent=0`.
 
 ## `logs/phase.log`
 
@@ -52,13 +52,13 @@ minute_utc,node,mempool_size
 
 ## What may land in this repo after END
 
-`minute.csv`, `phase.log` and `post-end-mempool.csv` only after a scan finds no key, seed, address, IP or transaction id. `submit.jsonl` never.
+`minute.csv`, `phase.log`, `post-end-mempool.csv`, `hwlog-desk.csv` and `hwlog-mini.csv` only after a scan finds no key, seed, address, IP, transaction id, hostname or user path. `submit.jsonl` never.
 
-## `hwlog-<label>.csv` · hardware logger (OPTIONAL, approved by PulseHawk)
+## `hwlog-<label>.csv` · hardware logger (OPTIONAL)
 
 [`tools/hwlog.ps1`](../tools/hwlog.ps1) compares how a strong and a modest home node handle the same storm. **Passive and read-only:** it only reads Windows performance counters (`Get-Counter`) and `Get-Process`; it never starts, stops or reconfigures kaspad. The "nodes untouched until END" rule stays in force.
 
-Approved by PulseHawk (pulsehawk.io), independent measurement.
+PulseHawk (pulsehawk.io) counts the storm independently from its own nodes.
 
 **Pre-run (T-2h, both PCs):** in an admin prompt run `w32tm /query /status` and `w32tm /resync`, then `w32tm /stripchart /computer:time.windows.com /samples:5 /dataonly` (or `pool.ntp.org`). Target offset under ~100 ms; log it.
 
@@ -66,9 +66,11 @@ Approved by PulseHawk (pulsehawk.io), independent measurement.
 - Before publishing any log, scrub hostnames, IPs and private paths.
 - Runs from **START−30 min to END+30 min** (17:30–19:30 UTC, 18:30–20:30 CET), one instance per PC.
 - Every 5 s: UTC time, label, total CPU %, available RAM (MB), disk reads/s, writes/s, queue length, kaspad working set (MB), kaspad CPU % (of all cores).
-- Example: `cd C:\Users\Fermi\tn10-storm` then `powershell -ExecutionPolicy Bypass -File .\tools\hwlog.ps1 -Label desk -DurationMinutes 120` (label `mini` on the mini).
+- Example: `cd <your-folder>\tn10-storm` then `powershell -ExecutionPolicy Bypass -File .\tools\hwlog.ps1 -Label desk -DurationMinutes 120` (label `mini` on the mini).
 
 | Node | CPU | RAM | Disk | kaspad |
 |---|---|---|---|---|
-| desk | Intel i7-13700K, 16 cores / 24 threads | 32 GB DDR5 | Samsung 990 Pro NVMe | default ram scale |
-| mini | AMD Ryzen 5 5500U, 6 cores / 12 threads | 11.9 GB | 447 GB SSD | `--ram-scale=0.6` |
+| desk | Intel i7-13700K, 16 cores / 24 threads | 32 GB DDR5 | Samsung 990 Pro NVMe | default ram scale, `--rpcmaxclients=24` |
+| mini | AMD Ryzen 5 5500U, 6 cores / 12 threads | 11.9 GB | 447 GB SSD | `--ram-scale=0.6 --async-threads=8` |
+
+Note: the config differences between the nodes are `--ram-scale=0.6` and `--async-threads=8` on the mini and `--rpcmaxclients=24` on the desk, so a gap between them reads as hardware plus config, not hardware alone. Both nodes listen on localhost only for wRPC (desk switched on 26 Oct 2026).

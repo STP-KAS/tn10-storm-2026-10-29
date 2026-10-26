@@ -25,7 +25,7 @@ The Beelink SER5 Pro mini PC (Ryzen 5 5500U, 16 GB, 480 GB SSD, Windows 11 Pro),
 
 ## Pre-flight checklist
 
-- [ ] `C:\Users\Fermi\tn10-run-kit\node\check-node.ps1` shows running yes, **Synced: True**, past median time seconds behind, peers > 0 (paste real output).
+- [ ] `<your-folder>\tn10-run-kit\node\check-node.ps1` shows running yes, **Synced: True**, past median time seconds behind, peers > 0 (paste real output).
 - [ ] Disk free **> 50 GB**.
 - [ ] No `--ram-scale` in the running command line.
 - [ ] Windows Update active hours cover 16:00–20:00 UTC; no pending restart. Power never sleeps.
@@ -38,11 +38,11 @@ The Beelink SER5 Pro mini PC (Ryzen 5 5500U, 16 GB, 480 GB SSD, Windows 11 Pro),
 ## Start / stop
 
 ```powershell
-cd C:\Users\Fermi\tn10-run-kit\node
+cd <your-folder>\tn10-run-kit\node
 .\check-node.ps1
 Start-ScheduledTask -TaskName 'TN10 kaspad'   # node start (if stopped)
 # TODO: coordinator + sender start commands (scripts not written yet)
-New-Item C:\Users\Fermi\tn10-storm-2026-10-29\control\STOP   # stop switch
+New-Item <your-folder>\tn10-storm-2026-10-29\control\STOP   # stop switch
 ```
 
 Do not run `stop-node.ps1` on the day unless the node is broken; it kills kaspad hard.
@@ -56,7 +56,7 @@ Do not run `stop-node.ps1` on the day unless the node is broken; it kills kaspad
 
 ## Logging
 
-- **Optional, approved by PulseHawk:** passive hardware logger `tools/hwlog.ps1 -Label mini` from START−30 min to END+30 min. Read-only; does not touch kaspad; node stays untouched until END. Details and specs: [LOGGING.md](LOGGING.md#hwlog-labelcsv--hardware-logger-optional-approved-by-pulsehawk).
+- **Optional:** passive hardware logger `tools/hwlog.ps1 -Label mini` from START−30 min to END+30 min. Read-only; does not touch kaspad; node stays untouched until END. Details and specs: [LOGGING.md](LOGGING.md#hwlog-labelcsv--hardware-logger-optional).
 - Logging pre-check: NTP synced to UTC (`w32tm /query /status`, `w32tm /resync`, stripchart vs time.windows.com/pool.ntp.org), offset < ~100 ms; no hostnames/IPs in anything published.
 
 The mini monitors only and never touches GitHub (no Git, no GitHub login). It writes its logs to local files. After the run, stp attaches them from the Grok Bot app on the mini to TN10 ops, who checks them, removes IPs and commits them to this repo.
