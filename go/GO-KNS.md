@@ -33,17 +33,20 @@ Overview: [GO-MAP.md](GO-MAP.md). Box sheet: [GO-BOT.md](GO-BOT.md). Rules: [REA
 
 ## Arm
 
-The supervisor restarts the runner on crash/stall (backoff 5/15/45/120 s) and exits on normal stop, refusal (rc 3) or `STOP` in the run folder. Arming needs both `--armed 1` and `KNS_ABC_ARMED=1`.
+The supervisor restarts the runner on crash/stall (backoff 5/15/45/120 s) and exits on normal stop, refusal (rc 3) or `STOP` in the run folder. Arming needs `--armed 1`, `KNS_ABC_ARMED=1` and `KNS_SHARED_STOP=<storm run_dir>/control/STOP`.
+
+**Window (set by kns tn10, 27 Oct, matches GO-MAP):** for START 18:00Z it sends 18:03–19:00Z, off 18:15–18:20Z and 18:35–18:40Z, hard END 19:00Z. One value, `schedule.start_utc` in `config/storm.json`, shifts it by +1 h if Pulse agrees.
 
 ```bash
 cd <your-folder>/tn10-1984-water-2026-10-17/kns/scripts
 export RUN_DIR=<your-folder>/kns-storm-run       # fresh folder, private (private.json stays here)
-export KNS_CONFIG=<your-folder>/kns-storm-lane.json   # lane config: 60/min, 16 in flight, 1.5x fee capped 1 tKAS
+export KNS_CONFIG=$RUN_DIR/config/storm.json      # lane config (kns tn10): 60/min, 16 in flight, 1.5x fee capped 1 tKAS; window from schedule.start_utc
+export KNS_SHARED_STOP=<storm run_dir>/control/STOP   # required in armed mode: storm STOP also stops KNS
 ./kns-abc-supervise.sh --dry-run 3               # dry, check window/rate
 KNS_ABC_ARMED=1 nohup ./kns-abc-supervise.sh --armed 1 > "$RUN_DIR/supervise.out" 2>&1 &
 ```
 
-Also started by `launch-box.sh` when `KNS_SUPERVISE`, `KNS_RUN_DIR` and `KNS_CONFIG` are set. `tools/storm/kns-lane.mjs` (no `--armed`) stays only as a schedule print / cross-check.
+Also started by `launch-box.sh` when `KNS_SUPERVISE`, `KNS_RUN_DIR` and `KNS_CONFIG` are set; it passes `KNS_SHARED_STOP=<storm run_dir>/control/STOP` itself. `tools/storm/kns-lane.mjs` (no `--armed`) stays only as a schedule print / cross-check.
 
 ## Stop / abort
 
