@@ -53,6 +53,8 @@ Do not run `stop-node.ps1` on the day unless the node is broken; it kills kaspad
 - Then close the Grok Bot app (frees ~400 MB). The mini doesn't need it during the test: kaspad and the logger run on their own and write to files.
 - After the run, reopen Grok Bot and send the log files to TN10 ops. Mid-run issues go via the desk PC or iPhone.
 
+**After GENESIS (T-9 min): state handoff.** Remote senders run `--source self` and need `state/family-N.json` from the mini. Mini: `node handoff.mjs export > handoff.json` (STORM_CONFIG set). Copy it into the desk and box run folders, then there: `node handoff.mjs import handoff.json`. Senders wait (no attempts) until the files exist. Never hand-edit state files.
+
 ## Logging
 
 - **Optional:** passive hardware logger `tools/hwlog.ps1 -Label mini` from START−30 min to END+30 min. Read-only; does not touch kaspad; node stays untouched until END. Details and specs: [LOGGING.md](LOGGING.md#hwlog-labelcsv--hardware-logger-optional).

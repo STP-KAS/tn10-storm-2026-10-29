@@ -34,6 +34,8 @@ STORM_CONFIG=<run>/config.json KNS_SUPERVISE=<tn10-1984-water>/kns/scripts/kns-a
 touch control/STOP   # stop switch
 ```
 
+**After GENESIS (T-9 min): state handoff.** Remote senders run `--source self` and need `state/family-N.json` from the mini. Mini: `node handoff.mjs export > handoff.json` (STORM_CONFIG set). Copy it into the desk and box run folders, then there: `node handoff.mjs import handoff.json`. Senders wait (no attempts) until the files exist. Never hand-edit state files.
+
 ## Logging
 
 As [LOGGING.md](LOGGING.md), one `sender`/`node` tag per public name. `post-end-mempool.csv` for each public name in the tag set, 19:00–19:15.

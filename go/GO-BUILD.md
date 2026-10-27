@@ -58,3 +58,5 @@ Node-dead rule (PulseHawk), network id check, STALL 30 s, shape mismatch, comput
 ## After END
 
 Desk mempool watch 15 min. Then scan `minute.csv` / `phase.log` for keys, seeds, addresses, IPs, txids; push counts only to `logs/`.
+
+**After GENESIS (T-9 min): state handoff.** Remote senders run `--source self` and need `state/family-N.json` from the mini. Mini: `node handoff.mjs export > handoff.json` (STORM_CONFIG set). Copy it into the desk and box run folders, then there: `node handoff.mjs import handoff.json`. Senders wait (no attempts) until the files exist. Never hand-edit state files.

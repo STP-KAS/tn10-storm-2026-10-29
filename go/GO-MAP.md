@@ -33,6 +33,7 @@ PulseHawk (pulsehawk.io) counts the storm independently from its own nodes. Desi
 | Thu 17:00 (T-1h) | 18:00 | Public-node check (version 2.1.0, network id testnet-10, mempool < 90,000, drop mirrors). Tag set written |
 | Thu 17:30 | 18:30 | Genesis submits per family (4 families, each own key + launch path) |
 | Thu **17:50** | 18:50 | Every genesis included on the main node's virtual chain |
+| Thu 17:51 | 18:51 | **State handoff:** on the mini `node handoff.mjs export > handoff.json` (chain-public: covenant id, owner pubkey, minter outpoint; no keys); copy to desk + box run folders; there `node handoff.mjs import handoff.json` → `state/family-N.json`. Remote `--source self` senders idle until it is there |
 | Thu 17:55 | 18:55 | Missing genesis → family dropped, logged. `control/STOP` confirmed absent on every side |
 | **18:00:00 T0** | **19:00** | **Step 1: 1 family, 5 att/s per sender** |
 | 18:15:00 | 19:15 | Gap: main sender OFF 5 min (no attempts) |

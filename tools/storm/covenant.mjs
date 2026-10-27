@@ -32,12 +32,7 @@ export function startBuilder(errFile) {
     });
   }).catch((e) => { throw e; }));
   const safe = (cmd, ms) => { const p = ask(cmd, ms); chain = p.catch(() => {}); return p; };
-  let followed = "";
-  return {
-    ask: safe,
-    async follow(st) { const k = st.txid + ":" + st.index + ":" + st.remaining + ":" + st.spk; if (k === followed) return; await safe(`follow ${st.covenantId} ${st.owner} ${st.txid} ${st.index} ${st.remaining} ${st.spk}`); followed = k; },
-    forget() { followed = ""; },
-  };
+  return withState(safe);
 }
 function startBuilderDirect(errFile) {
   const child = spawn(CFG.builder_exe, ["storm"], { env: { ...process.env, STORM_KEYS: CFG.keys_file, STORM_FEE_RATE: String(CFG.fee_sompi_per_gram || 200), STORM_ROOT: CFG.storm_root || process.env.STORM_ROOT || "" }, stdio: ["pipe", "pipe", "pipe"] });
@@ -53,8 +48,26 @@ function startBuilderDirect(errFile) {
     child.stdin.write(cmd + "\n");
   })).catch((e) => { throw e; }));
   const safe = (cmd, ms) => { const p = ask(cmd, ms); chain = p.catch(() => {}); return p; };
-  let followed = "";
-  return { ask: safe, async follow(st) { const k = st.txid + ":" + st.index + ":" + st.remaining + ":" + st.spk; if (k === followed) return; await safe(`follow ${st.covenantId} ${st.owner} ${st.txid} ${st.index} ${st.remaining} ${st.spk}`); followed = k; }, forget() { followed = ""; } };
+  return withState(safe);
+}
+
+
+// The builder holds ONE chain state. Concurrent attempts (two families, many in-flight hops) used to interleave
+// `follow X` / `follow Y` / `hop`, and the JS-side follow cache could claim X while the builder held Y. A hop or
+// nextspk then mixed one family's minter outpoint/spk with another state's remaining -> "PublicMint UTXO script does
+// not match its declared state" in the builder and covenant-binding rejects at the node. Fix: follow + command are one
+// critical section, always re-sent (follow is local and cheap).
+function withState(safe) {
+  let lock = Promise.resolve();
+  const run = (st, cmd, ms) => {
+    const p = lock.then(async () => {
+      await safe(`follow ${st.covenantId} ${st.owner} ${st.txid} ${st.index} ${st.remaining} ${st.spk}`);
+      return safe(cmd, ms);
+    });
+    lock = p.catch(() => {});
+    return p;
+  };
+  return { ask: (cmd, ms) => { const p = lock.then(() => safe(cmd, ms)); lock = p.catch(() => {}); return p; }, run, follow: (st) => run(st, "ping"), forget() {} };
 }
 
 export function materialize(tx) {
@@ -72,14 +85,13 @@ export function keyAddress(i) {
 
 // Build one hop. Returns { tx, txid } or throws. Checks the wasm id equals the builder id.
 export async function buildHop(B, st, coin, key, nonce) {
-  await B.follow(st);
-  const r = await B.ask(`hop ${key} ${coin.txid} ${coin.index} ${coin.amount} ${nonce}`);
+  const r = await B.run(st, `hop ${key} ${coin.txid} ${coin.index} ${coin.amount} ${nonce}`);
   const tx = materialize(r.tx); if (norm(tx.id) !== norm(r.txid)) throw new Error("hop id mismatch");
   return { tx, txid: norm(r.txid), nextSpk: r.nextSpk, compute: r.compute, fee: r.fee };
 }
 
 // Follower: given the current state, the next minter lands at a known address. Returns the next state or null.
-export async function nextSpk(B, st) { await B.follow(st); return (await B.ask("nextspk")).spk; }
+export async function nextSpk(B, st) { return (await B.run(st, "nextspk")).spk; }
 export async function step(rpc, B, st) {
   if (!st.nextSpk) st.nextSpk = await nextSpk(B, st);
   const r = await to(rpc.getUtxosByAddresses({ addresses: [spkAddress(st.nextSpk)] }), 5000);
