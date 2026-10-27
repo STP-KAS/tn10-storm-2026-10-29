@@ -65,6 +65,8 @@ export const stateFile = (f) => P("state", `family-${f}.json`);
 export function readState(f) { try { const j = JSON.parse(fs.readFileSync(stateFile(f), "utf8")); return { ...j, amount: BigInt(j.amount) }; } catch { return null; } }
 // Windows: a reader holding the file makes rename fail with EPERM; retry, then fall back to an in-place write.
 export function writeState(f, st) {
+  const prev = (() => { try { return JSON.parse(fs.readFileSync(stateFile(f), "utf8")); } catch { return null; } })();
+  if (prev && (prev.seq || 0) > (st.seq || 0)) return; // never publish an older tip over a newer one
   const body = JSON.stringify({ ...st, amount: String(st.amount) }), t = stateFile(f) + ".tmp";
   fs.writeFileSync(t, body);
   for (let i = 0; i < 50; i++) { try { fs.renameSync(t, stateFile(f)); return; } catch { const u = Date.now() + 2; while (Date.now() < u); } }

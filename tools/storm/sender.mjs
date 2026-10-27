@@ -52,11 +52,13 @@ async function attempt(fam) {
   const coin = pool.pick(fam, nFam); if (!coin) return;
   let h; try { h = await buildHop(B, st, coin, KEY, nonce++); } catch (e) { LOG.write(JSON.stringify({ ts: iso(), sender: LABEL, node: LABEL, family: fam, txid: "", result: "rejected", reason: "other", err: String(e.message || e).slice(0, 120) }) + "\n"); return; }
   if (h.compute > 100000) return;
-  const ts = iso(); let result = "ok", why = "";
+  const ts = iso(); let result = "ok", why = "", err = "";
   try { await to(rpc.submitTransaction({ transaction: h.tx, allowOrphan: false }), 8000, "submit"); }
-  catch (e) { result = "rejected"; why = reason(e); }
-  LOG.write(JSON.stringify({ ts, sender: LABEL, node: LABEL, family: fam, txid: h.txid, result, reason: why, source: SOURCE }) + "\n");
+  catch (e) { result = "rejected"; why = reason(e); err = String(e?.message || e).replace(/\s+/g, " ").slice(0, 160); }
+  const row = { ts, sender: LABEL, node: LABEL, family: fam, txid: h.txid, result, reason: why, source: SOURCE }; if (err) row.err = err;
+  LOG.write(JSON.stringify(row) + "\n");
   if (++shapeTry <= 20 && (why === "mass" || why === "fee")) { if (++shapeRej >= 5 && !dropped) { dropped = true; phase(`NODE_DROP node=${LABEL} reason=redeem_shape`); } }
+  if (SOURCE === "self" && (why === "orphan" || why === "already_spent")) { selfState.delete(fam); B.forget(); } // tip moved; re-catchUp next attempt
   // spent funding coin: drop it from the pool until the next refresh (change will appear)
   pool.coins = pool.coins.filter((c) => !(c.txid === coin.txid && c.index === coin.index));
 }

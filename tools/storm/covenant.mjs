@@ -35,7 +35,7 @@ export function startBuilder(errFile) {
   let followed = "";
   return {
     ask: safe,
-    async follow(st) { const k = st.txid + ":" + st.index; if (k === followed) return; await safe(`follow ${st.covenantId} ${st.owner} ${st.txid} ${st.index} ${st.remaining} ${st.spk}`); followed = k; },
+    async follow(st) { const k = st.txid + ":" + st.index + ":" + st.remaining + ":" + st.spk; if (k === followed) return; await safe(`follow ${st.covenantId} ${st.owner} ${st.txid} ${st.index} ${st.remaining} ${st.spk}`); followed = k; },
     forget() { followed = ""; },
   };
 }
@@ -54,7 +54,7 @@ function startBuilderDirect(errFile) {
   })).catch((e) => { throw e; }));
   const safe = (cmd, ms) => { const p = ask(cmd, ms); chain = p.catch(() => {}); return p; };
   let followed = "";
-  return { ask: safe, async follow(st) { const k = st.txid + ":" + st.index; if (k === followed) return; await safe(`follow ${st.covenantId} ${st.owner} ${st.txid} ${st.index} ${st.remaining} ${st.spk}`); followed = k; }, forget() { followed = ""; } };
+  return { ask: safe, async follow(st) { const k = st.txid + ":" + st.index + ":" + st.remaining + ":" + st.spk; if (k === followed) return; await safe(`follow ${st.covenantId} ${st.owner} ${st.txid} ${st.index} ${st.remaining} ${st.spk}`); followed = k; }, forget() { followed = ""; } };
 }
 
 export function materialize(tx) {
@@ -88,8 +88,89 @@ export async function step(rpc, B, st) {
   const e = es[0];
   return { covenantId: st.covenantId, owner: st.owner, txid: norm(e.outpoint.transactionId), index: e.outpoint.index, remaining: st.remaining - 1, spk: st.nextSpk, seq: (st.seq || 0) + 1, amount: String(e.amount) };
 }
+function spkHex(e) {
+  const spk = e.scriptPublicKey || e.utxoEntry?.scriptPublicKey;
+  if (!spk) return "";
+  const s = spk.script ?? spk;
+  return typeof s === "string" ? s.replace(/^0x/, "").toLowerCase() : Buffer.from(s).toString("hex");
+}
+async function liveAt(rpc, st) {
+  const r = await to(rpc.getUtxosByAddresses({ addresses: [spkAddress(st.spk)] }), 5000);
+  const hit = (r.entries || []).find((e) => norm(e.outpoint.transactionId) === norm(st.txid) && e.outpoint.index === st.index);
+  if (hit) return { ...st, amount: String(hit.amount), index: hit.outpoint.index };
+  // any UTXO at this spk (txid may be unknown after a virtual walk)
+  const any = (r.entries || [])[0];
+  if (!any) return null;
+  return { covenantId: st.covenantId, owner: st.owner, txid: norm(any.outpoint.transactionId), index: any.outpoint.index, remaining: st.remaining, spk: st.spk, seq: st.seq || 0, amount: String(any.amount) };
+}
+async function liveAmong(rpc, cands) {
+  if (!cands.length) return null;
+  const addrs = cands.map((c) => spkAddress(c.spk));
+  const r = await to(rpc.getUtxosByAddresses({ addresses: addrs }), 8000);
+  const entries = r.entries || [];
+  if (!entries.length) return null;
+  // Prefer the candidate with the lowest remaining (newest tip). Match by spk hex.
+  const bySpk = new Map(cands.map((c) => [String(c.spk).replace(/^0x/, "").toLowerCase(), c]));
+  let best = null;
+  for (const e of entries) {
+    const hx = spkHex(e);
+    const c = bySpk.get(hx);
+    if (!c) continue;
+    const st = { covenantId: c.covenantId, owner: c.owner, txid: norm(e.outpoint.transactionId), index: e.outpoint.index, remaining: c.remaining, spk: c.spk, seq: c.seq || 0, amount: String(e.amount) };
+    if (!best || st.remaining < best.remaining) best = st;
+  }
+  return best;
+}
+// Virtual walk: intermediates are spent so step() cannot chain; probe successive nextSpk addresses in batches.
+async function tipFind(rpc, B, st, max) {
+  B.forget();
+  const BATCH = 32;
+  let cur = { ...st, amount: String(st.amount) };
+  let pending = [{ ...cur }];
+  let found = null;
+  for (let i = 0; i < max; i++) {
+    const nspk = await nextSpk(B, cur);
+    cur = { covenantId: cur.covenantId, owner: cur.owner, txid: "0".repeat(64), index: 0, remaining: cur.remaining - 1, spk: nspk, seq: (cur.seq || 0) + 1, amount: String(cur.amount) };
+    pending.push({ ...cur });
+    if (pending.length >= BATCH) {
+      const hit = await liveAmong(rpc, pending);
+      if (hit) found = hit; // keep scanning a little so we land on the newest
+      // Once we have a hit, only keep looking within the next batch or two for a newer tip
+      pending = found ? [] : [];
+      if (found) {
+        // continue one more batch from found to confirm tip
+        const more = [];
+        let probe = { ...found };
+        for (let j = 0; j < BATCH; j++) {
+          const nspk2 = await nextSpk(B, probe);
+          probe = { covenantId: probe.covenantId, owner: probe.owner, txid: "0".repeat(64), index: 0, remaining: probe.remaining - 1, spk: nspk2, seq: (probe.seq || 0) + 1, amount: String(probe.amount) };
+          more.push({ ...probe });
+        }
+        const newer = await liveAmong(rpc, more);
+        return newer || found;
+      }
+    }
+  }
+  if (pending.length) {
+    const hit = await liveAmong(rpc, pending);
+    if (hit) return hit;
+  }
+  if (found) return found;
+  throw new Error("tip-find: no live minter from stale state");
+}
 // Walk forward from a (possibly old) state to the newest minter. Used by a takeover coordinator and by self senders.
-export async function catchUp(rpc, B, st, max = 100000) { let n = 0; for (;;) { const x = await step(rpc, B, st); if (!x || ++n > max) return st; st = x; } }
+// When intermediate UTXOs are already spent, falls back to tip-find (virtual nextSpk walk + batched address probes).
+export async function catchUp(rpc, B, st, max = 100000) {
+  let n = 0;
+  for (;;) {
+    const x = await step(rpc, B, st);
+    if (x) { st = x; if (++n > max) return st; continue; }
+    break;
+  }
+  const live = await liveAt(rpc, st);
+  if (live) return live;
+  return tipFind(rpc, B, st, Math.max(1, max - n));
+}
 
 // Funding-coin pool for one key. Coins are split by family so two families never spend the same coin.
 export class Pool {

@@ -25,7 +25,10 @@ if (TAKEOVER) {
   phase(`MAIN node=${arg("label", "desk")} reason=${arg("reason", "main_dead")}`);
   for (const f of fams) {
     const st = readState(f.family); if (!st || !st.covenantId) { phase(`FAMILY_DROP family=${f.family} reason=no_state`); continue; }
-    const caught = await catchUp(rpc, B, st); await publish(f, caught); f.live = true;
+    const fromSeq = st.seq || 0;
+    const caught = await catchUp(rpc, B, st);
+    phase(`TIP family=${f.family} from_seq=${fromSeq} to_seq=${caught.seq || 0}`);
+    await publish(f, caught); f.live = true;
   }
 } else {
   const famCheck = T(CFG.family_check_utc);

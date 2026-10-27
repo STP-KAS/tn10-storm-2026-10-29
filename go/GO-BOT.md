@@ -16,6 +16,7 @@ You are **Grok Bot**, TN10 ops on the box (Linux). Overview: [GO-MAP.md](GO-MAP.
 ## Pre-flight checklist
 
 - [ ] T-24h: each candidate public name: version 2.1.0, network id `testnet-10`, mempool < 90,000. Two names that move together → keep one.
+- [ ] Public tags this phase: prefer `vector` + `muon` (both 2.1.0 / testnet-10 / synced on 2026-10-27 box check; vector connect ~5s). `boson` also passed and is the GO-MAP alternate if vector flakes.
 - [ ] Funding coins per public lane, own key per lane, from the TN10 treasury in small batches (never a full UTXO load). ~1,600 tKAS per lane pre-split into ≥ 100 coins; at most 2 public lanes (`vector` + `muon` or `boson`).
 - [ ] Shape test: one hop-sized tx accepted by each kept name (fee/mass not rejected); a name that rejects the shape is dropped.
 - [ ] T-2h, T-5 min, END+1 min: `python3 tools/ntplog.py --machine box --out <run>/logs/ntp.csv` (box stamps `ts` for public senders).
@@ -27,7 +28,7 @@ You are **Grok Bot**, TN10 ops on the box (Linux). Overview: [GO-MAP.md](GO-MAP.
 Run directory: a private box folder outside any repo.
 
 ```bash
-# public sender: tools/storm/sender.mjs with outpoint self-discovery (source=self), still to be added
+# public sender: tools/storm/sender.mjs --source self (tip-find catchUp on the sender's own node)
 touch control/STOP   # stop switch
 ```
 

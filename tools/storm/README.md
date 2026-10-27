@@ -24,7 +24,13 @@ Node 22+ (native WebSocket) or Node 20 + a `websocket` module, Kaspa WASM SDK 2.
 - sent 117, ok 69, already_spent 37, orphan 11, fee/mass/rpc 0.
 - hops 68 with seen+header; include p50 1150 ms, p95 1691 ms; sec.csv 160/160; END clean.
 - `source=self` check: 75 s, hops 43, same reject shape, source stamped `self`.
+- Takeover / self tip-follow: `catchUp` walks live nextSpk UTXOs when possible; if intermediates are already spent it **tip-finds** (virtual nextSpk walk + batched `getUtxosByAddresses`) so a desk `--takeover` resumes from the chain tip, not a stale state pack.
 
 Bug found: two `kcc20 storm` processes cannot open `build/public-mint` on Windows (Access denied). Fixed with `builder-broker.mjs`.
 
 `private/` (txids, covenant ids) stays local. Only counts-only logs are shareable after a scan.
+
+## Mini→desk failover (27 Oct, real hop)
+
+- **failover-3:** mini main step 1 → pack state at seq=0 → kill mini storm at gap → desk `--takeover` tip-find **from_seq=0 to_seq=41** → desk-only step 2: sent 40, **ok 25**, orphan 2, already_spent 13; hops 24; final seq 65; STOP END. Kaspad left running on both PCs.
+- Tip-follow: `catchUp` + tip-find (virtual nextSpk walk) so stale state packs resume from the live minter on the local node.

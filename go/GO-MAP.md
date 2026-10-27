@@ -58,7 +58,7 @@ PulseHawk (pulsehawk.io) counts the storm independently from its own nodes. Desi
 
 Settled 26 Oct (details in [plan/PLAN.md](../plan/PLAN.md#lanes-and-senders-decided-26-oct)):
 
-- **Lanes:** one sender per node tag (`desk`, `mini` if main, ≤ 2 public tags: `vector` + one of `muon`/`boson`); every lane contends on every live family at 5 att/s; own funding key per lane.
+- **Lanes:** one sender per node tag (`desk`, `mini` if main, ≤ 2 public tags: `vector` + one of `muon`/`boson`); every lane contends on every live family at 5 att/s; own funding key per lane. Box check 2026-10-27: `vector`+`muon` both usable (vector slower to connect); `boson` is the alternate if vector flakes.
 - **Genesis:** the coordinator on the main node creates families 1–4; covenant ids private only.
 - **Outpoint:** coordinator → desk/mini senders privately; box senders self-discover from their own node (`seen_utc` source=self). Desk coordinator takes over if the mini dies.
 - **KNS lane:** in, as a background lane (`family=0`, sender `kns`, own minute file, not counted), 60 names/min from 18:03, off in gaps, node `vector` (spare `muon`), capped fee exception.
