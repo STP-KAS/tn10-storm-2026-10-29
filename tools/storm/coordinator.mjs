@@ -3,7 +3,7 @@
 // time. Phase tokens: MINER, GENESIS, FAMILY_DROP, START, STEP, GAP_*, MAIN, STALL, STOP. TESTNET-10 ONLY.
 import fs from "node:fs";
 import { CFG, P, phase, iso, sleep, to, stepAt, END, T, STOPF, connect, writeState, readState, arg } from "./lib.mjs";
-import { startBuilder, materialize, spkAddress, keyAddress, nextSpk, catchUp } from "./covenant.mjs";
+import { startBuilder, materialize, spkAddress, keyAddress, nextSpk, catchUp, ofCov } from "./covenant.mjs";
 
 const TAKEOVER = process.argv.includes("--takeover");
 const HOPS = fs.createWriteStream(P("private", "hops.jsonl"), { flags: "a" });
@@ -33,10 +33,13 @@ if (TAKEOVER) {
 } else {
   const famCheck = T(CFG.family_check_utc);
   while (Date.now() < famCheck - 5000 && !fs.existsSync(STOPF)) await sleep(250);
+  const owners = new Map();   // families sharing a genesis key share the minter script; followers match on covenant id
   for (const f of fams) {
     try {
       const key = Number(f.key ?? 0);
       const addr = keyAddress(key);
+      if (owners.has(addr)) console.error(`warn: family ${f.family} shares its genesis key with family ${owners.get(addr)} (same minter script; followers match on covenant id)`);
+      owners.set(addr, f.family);
       const bag = await to(rpc.getUtxosByAddresses({ addresses: [addr] }), 8000);
       const entries = (bag.entries || []).filter((e) => !e.isCoinbase);
       entries.sort((a, b) => (BigInt(b.amount) > BigInt(a.amount) ? 1 : -1));
@@ -99,7 +102,7 @@ while (!stopWhy) {
     if (!f.live || !f.nextAddr) continue;
     try {
       const u = await to(rpc.getUtxosByAddresses({ addresses: [f.nextAddr] }), 5000);
-      const es = u.entries || [];
+      const es = ofCov(u.entries, f.cur.covenantId);
       if (es.length) {
         const e = es[0]; const seen = Date.now();
         if (!f.cur.nextSpk) continue;

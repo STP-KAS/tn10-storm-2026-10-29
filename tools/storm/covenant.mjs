@@ -78,6 +78,10 @@ export function materialize(tx) {
   return new kaspa.Transaction({ version: tx.version, inputs, outputs, lockTime: BigInt(tx.lockTime), subnetworkId: tx.subnetworkId, gas: BigInt(tx.gas), payload: tx.payload, storageMass: BigInt(tx.storageMass) });
 }
 const norm = (s) => String(s).replace(/^0x/, "").toLowerCase();
+// Covenant id carried by a UTXO entry (wasm Hash -> hex). Families whose genesis keys share an owner have the SAME
+// minter script, so one P2SH address can hold several families' minters: always match on covenant id.
+export function covOf(e) { const c = e?.covenantId ?? e?.entry?.covenantId; if (!c) return ""; try { return norm(c.toString()); } catch { return ""; } }
+export const ofCov = (entries, id) => (entries || []).filter((e) => covOf(e) === norm(id));
 export const spkAddress = (hex) => kaspa.addressFromScriptPublicKey(new kaspa.ScriptPublicKey(0, hex), NET).toString();
 export function keyAddress(i) {
   const hex = fs.readFileSync(CFG.keys_file, "utf8").trim().split(/\r?\n/)[i].trim();
@@ -96,7 +100,7 @@ export async function nextSpk(B, st) { return (await B.run(st, "nextspk")).spk; 
 export async function step(rpc, B, st) {
   if (!st.nextSpk) st.nextSpk = await nextSpk(B, st);
   const r = await to(rpc.getUtxosByAddresses({ addresses: [spkAddress(st.nextSpk)] }), 5000);
-  const es = r.entries || [];
+  const es = ofCov(r.entries, st.covenantId);
   if (!es.length) return null;
   const e = es[0];
   return { covenantId: st.covenantId, owner: st.owner, txid: norm(e.outpoint.transactionId), index: e.outpoint.index, remaining: st.remaining - 1, spk: st.nextSpk, seq: (st.seq || 0) + 1, amount: String(e.amount) };
@@ -109,10 +113,11 @@ function spkHex(e) {
 }
 async function liveAt(rpc, st) {
   const r = await to(rpc.getUtxosByAddresses({ addresses: [spkAddress(st.spk)] }), 5000);
-  const hit = (r.entries || []).find((e) => norm(e.outpoint.transactionId) === norm(st.txid) && e.outpoint.index === st.index);
+  const mine = ofCov(r.entries, st.covenantId);
+  const hit = mine.find((e) => norm(e.outpoint.transactionId) === norm(st.txid) && e.outpoint.index === st.index);
   if (hit) return { ...st, amount: String(hit.amount), index: hit.outpoint.index };
   // any UTXO at this spk (txid may be unknown after a virtual walk)
-  const any = (r.entries || [])[0];
+  const any = mine[0];
   if (!any) return null;
   return { covenantId: st.covenantId, owner: st.owner, txid: norm(any.outpoint.transactionId), index: any.outpoint.index, remaining: st.remaining, spk: st.spk, seq: st.seq || 0, amount: String(any.amount) };
 }
@@ -120,7 +125,7 @@ async function liveAmong(rpc, cands) {
   if (!cands.length) return null;
   const addrs = cands.map((c) => spkAddress(c.spk));
   const r = await to(rpc.getUtxosByAddresses({ addresses: addrs }), 8000);
-  const entries = r.entries || [];
+  const entries = ofCov(r.entries, cands[0].covenantId);
   if (!entries.length) return null;
   // Prefer the candidate with the lowest remaining (newest tip). Match by spk hex.
   const bySpk = new Map(cands.map((c) => [String(c.spk).replace(/^0x/, "").toLowerCase(), c]));
