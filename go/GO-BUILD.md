@@ -26,6 +26,7 @@ You are **Grok Build** on stp's Windows desk PC. Overview: [GO-MAP.md](GO-MAP.md
 - [ ] Windows Update active hours cover 17:00–21:00 UTC; no pending restart.
 - [ ] T-2h: NTP check (`w32tm /stripchart` or similar), offset logged.
 - [ ] T-2h: main-node decision read from GO-MAP; if fallback, coordinator armed on the desk node.
+- [ ] 18:45 UTC: read-only `node-watch` running on the desk (every 5 s to 20:20, `logs/node-watch-desk.csv`); see GO-MAP dated changes.
 - [ ] T-5 min: `control/STOP` absent; START line ready with tag set and rate.
 
 ## Start / stop
@@ -49,7 +50,7 @@ Senders stop by themselves at 20:00:00Z whatever time they were started.
 - **Optional:** passive hardware logger `tools/hwlog.ps1 -Label desk` from START−30 min to END+30 min. Read-only; does not touch kaspad; node stays untouched until END. Details and specs: [LOGGING.md](LOGGING.md#hwlog-labelcsv--hardware-logger-optional).
 - Logging pre-check: NTP synced to UTC (`w32tm /query /status`, `w32tm /resync`, stripchart vs time.windows.com/pool.ntp.org), offset < ~100 ms; no hostnames/IPs in anything published.
 
-As [LOGGING.md](LOGGING.md): `submit.jsonl` (stays on disk), `minute.csv`, `phase.log` (if coordinator), and `post-end-mempool.csv` for the desk node 20:00–20:15. Reason tokens only, never the raw node sentence.
+As [LOGGING.md](LOGGING.md): `submit.jsonl` (stays on disk), `minute.csv`, `phase.log` (if coordinator), and `post-end-mempool.csv` for the desk node 20:00–20:15, and `node-watch-desk.csv` (read-only, 18:45–20:20). Reason tokens only, never the raw node sentence.
 
 ## Abort rules
 

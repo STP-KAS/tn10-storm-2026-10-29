@@ -32,6 +32,7 @@ PulseHawk (pulsehawk.io) counts the storm independently from its own nodes. Desi
 | Thu 17:00 (T-2h) | 18:00 | Main-node decision (above). NTP rows for desk, mini, box in `ntp.csv` (also 18:55 and 20:01) |
 | Thu 18:00 (T-1h) | 19:00 | Public-node check (version 2.1.0, network id testnet-10, mempool < 90,000, drop mirrors). Tag set written |
 | Thu 18:30 | 19:30 | Genesis submits per family (4 families, each own key + launch path) |
+| Thu 18:45 | 19:45 | Read-only `node-watch` starts on desk and mini (every 5 s, until 20:20); reads only, no effect on lanes |
 | Thu **18:50** | 19:50 | Every genesis included on the main node's virtual chain |
 | Thu 18:51 | 19:51 | **State handoff:** on the mini `node handoff.mjs export > handoff.json` (chain-public: covenant id, owner pubkey, minter outpoint; no keys); copy to desk + box run folders; there `node handoff.mjs import handoff.json` → `state/family-N.json`. Remote `--source self` senders idle until it is there |
 | Thu 18:55 | 19:55 | Missing genesis → family dropped, logged. `control/STOP` confirmed absent on every side |
@@ -68,5 +69,7 @@ Settled 26 Oct (details in [plan/PLAN.md](../plan/PLAN.md#lanes-and-senders-deci
 - **Mini:** decided at T−2h (synced → main).
 
 ## Dated changes
+
+- 27 Oct 2026, after the freeze: added a read-only `node-watch` on desk and mini, every 5 s, 18:45–20:20 UTC Thursday, logging RPC latency, isSynced, peers, mempool, DAA score, kaspad CPU and RAM, and reachability to `logs/node-watch-<desk|mini>.csv`. It reads only and does not change senders, coordinator, rates or kaspad. Reason: a 27 Oct test saw both private nodes marked dead in the same second.
 
 - 27 Oct 2026, after the 18:00 UTC freeze: START moved 18:00 -> 19:00 UTC (END 19:00 -> 20:00 UTC) at stp's request (his bot usage resets that day), agreed by PulseHawk the same evening (about 19:15 UTC). Covenant ids to PulseHawk by 18:55 UTC. PulseHawk counts 19:03:00–19:14:59, 19:23:00–19:34:59 and 19:43:00–19:59:59 UTC. Only times moved; tools, rates, lanes and families are unchanged and stay exactly as rehearsal 1027f.
