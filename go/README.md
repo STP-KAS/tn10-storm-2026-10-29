@@ -2,7 +2,7 @@
 
 # GO · shared rules
 
-**NOT ARMED until stp sends GO.** The drop gate is already met (20 Oct rehearsal, label A). Frozen plan due Tue 27 Oct 2026, 18:00 UTC.
+**Status: GO** (stp, Tue 27 Oct 2026). Locked; changes go in `phase.log` as a deviation. Time: **START 18:00 UTC (proposed 19:00 UTC, pending Pulse)**; END = START + 1 h. If Pulse agrees, only the clock line and `config.json` times move by +1 h. The drop gate is already met (20 Oct rehearsal, label A). Frozen plan due Tue 27 Oct 2026, 18:00 UTC.
 
 ## Run sheets
 
@@ -12,13 +12,31 @@
 | [GO-BUILD.md](GO-BUILD.md) | Build on the desk PC |
 | [GO-BOT.md](GO-BOT.md) | Grok Bot on the box (public nodes) |
 | [GO-MINI.md](GO-MINI.md) | Mini PC main node |
+| [GO-KNS.md](GO-KNS.md) | KNS background lane (family 0) |
+| [LOGGING.md](LOGGING.md) | Log columns |
+
+## Lanes and status
+
+| Lane | Machine | Runner (process that sends txs) | Sheet | Status |
+|---|---|---|---|---|
+| Coordinator + genesis (families 1–4) | mini (main) | `coordinator.mjs` via broker | [GO-MINI](GO-MINI.md), [GO-BUILD](GO-BUILD.md) | GO |
+| Sender `mini` | mini | `sender.mjs --label mini` | [GO-MINI](GO-MINI.md) | GO |
+| Coordinator failover | desk | `coordinator.mjs --takeover` (only if mini dies / not synced) | [GO-BUILD](GO-BUILD.md) | GO (standby) |
+| Sender `desk` (lane keys 0–3) | desk | `sender.mjs --label desk` | [GO-BUILD](GO-BUILD.md) | GO |
+| Public senders `vector`, `muon` (alt `boson`) | box | `sender.mjs --source self` | [GO-BOT](GO-BOT.md) | GO |
+| KNS lane (family 0, not counted) | box | `kns-lane.mjs --armed` + kns tn10 create runner | [GO-KNS](GO-KNS.md) | GO (armed at START) |
+| Box CPU miner (modest, public nodes) | box | miner (no txs) | [GO-BOT](GO-BOT.md) | GO, keeps running |
+
+## Runners
+
+Every planned tx is sent by one of the processes above: genesis and hop following by `coordinator.mjs`, contention hops by `sender.mjs` (one per node tag), KNS names by `kns-lane.mjs`. The `kcc20 storm` builder (via `builder-broker.mjs` on Windows) only builds and signs; it does not send. No GitHub Actions or CI runners are used. One-command launchers per machine: `tools/storm/launch-desk.ps1`, `tools/storm/launch-mini.ps1`, `tools/storm/launch-box.sh` (start at T−5 min; they never touch kaspad).
 
 ## Single clock
 
 | | UTC | Brussels (CET) |
 |---|---|---|
-| T0 / START | Thu 29 Oct 2026, 18:00 | 19:00 |
-| END | Thu 29 Oct 2026, 19:00 | 20:00 |
+| T0 / START | Thu 29 Oct 2026, 18:00 (proposed 19:00, pending Pulse) | 19:00 (proposed 20:00) |
+| END | Thu 29 Oct 2026, 19:00 (proposed 20:00) | 20:00 (proposed 21:00) |
 | Post-END watch | 19:00–19:15 | 20:00–20:15 |
 
 No new attempt is built at or after END.

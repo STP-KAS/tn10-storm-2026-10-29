@@ -4,7 +4,7 @@
 
 You are **Grok Bot**, TN10 ops on the box (Linux). Overview: [GO-MAP.md](GO-MAP.md). Other sides: [GO-BUILD.md](GO-BUILD.md), [GO-MINI.md](GO-MINI.md). Rules: [README.md](README.md).
 
-**Not armed until stp sends GO.**
+**Status: GO** (stp, Tue 27 Oct 2026). Locked; changes go in `phase.log` as a deviation. Time: **START 18:00 UTC (proposed 19:00 UTC, pending Pulse)**; END = START + 1 h. If Pulse agrees, only the clock line and `config.json` times move by +1 h.
 
 ## Your role
 
@@ -29,6 +29,8 @@ Run directory: a private box folder outside any repo.
 
 ```bash
 # public sender: tools/storm/sender.mjs --source self (tip-find catchUp on the sender's own node)
+STORM_CONFIG=<run>/config.json KNS_RUNNER=<kns-tn10-folder>/scripts/kns-smoke-create.mjs tools/storm/launch-box.sh <vector-url> <muon-url>   # vector + muon + KNS lane ([GO-KNS](GO-KNS.md)); PUB2_LABEL=boson for the alternate
+# box CPU miner: keeps running, modest, public nodes; no txs
 touch control/STOP   # stop switch
 ```
 

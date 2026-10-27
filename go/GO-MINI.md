@@ -4,7 +4,7 @@
 
 The Beelink SER5 Pro mini PC (Ryzen 5 5500U, 16 GB, 480 GB SSD, Windows 11 Pro), node from [tn10-run-kit](https://github.com/STP-KAS/tn10-run-kit) `node/`. Run by Grok Build on the mini itself (no Remote Desktop). stp talks to TN10 ops through the Grok Bot app on the mini; each message shows which machine it came from. Overview: [GO-MAP.md](GO-MAP.md).
 
-**Not armed until stp sends GO.**
+**Status: GO** (stp, Tue 27 Oct 2026). Locked; changes go in `phase.log` as a deviation. Time: **START 18:00 UTC (proposed 19:00 UTC, pending Pulse)**; END = START + 1 h. If Pulse agrees, only the clock line and `config.json` times move by +1 h.
 
 ## Role
 
@@ -38,6 +38,7 @@ The Beelink SER5 Pro mini PC (Ryzen 5 5500U, 16 GB, 480 GB SSD, Windows 11 Pro),
 ```powershell
 cd <your-folder>\tn10-run-kit\node
 .\check-node.ps1
+# lanes, one command: <your-folder>\tn10-storm-kit\launch-mini.ps1 -Kit <your-folder>\tn10-storm-kit -Config <your-folder>\tn10-storm-2026-10-29\config.json
 Start-ScheduledTask -TaskName 'TN10 kaspad'   # node start (if stopped)
 New-Item <your-folder>\tn10-storm-2026-10-29\control\STOP   # stop switch
 ```

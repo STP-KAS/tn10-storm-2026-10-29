@@ -2,7 +2,9 @@
 
 # GO-MAP · Thu 29 Oct 2026, 18:00–19:00 UTC (19:00–20:00 CET)
 
-One page: who does what, and when. Each side has its own run sheet: [GO-BUILD.md](GO-BUILD.md) (desk PC), [GO-BOT.md](GO-BOT.md) (box), [GO-MINI.md](GO-MINI.md) (mini PC). Shared rules: [README.md](README.md). Columns: [LOGGING.md](LOGGING.md). Design: [plan/PLAN.md](../plan/PLAN.md). Detailed build and rehearsal: [tn10-covenant-contention-2026-10-29](https://github.com/STP-KAS/tn10-covenant-contention-2026-10-29).
+**Status: GO** (stp, Tue 27 Oct 2026). Locked; changes go in `phase.log` as a deviation. Time: **START 18:00 UTC (proposed 19:00 UTC, pending Pulse)**; END = START + 1 h. If Pulse agrees, only the clock line and `config.json` times move by +1 h. All lanes GO: see the [lane table](README.md#lanes-and-status).
+
+One page: who does what, and when. Each side has its own run sheet: [GO-BUILD.md](GO-BUILD.md) (desk PC), [GO-BOT.md](GO-BOT.md) (box), [GO-MINI.md](GO-MINI.md) (mini PC), [GO-KNS.md](GO-KNS.md) (KNS lane). Shared rules: [README.md](README.md). Columns: [LOGGING.md](LOGGING.md). Design: [plan/PLAN.md](../plan/PLAN.md). Detailed build and rehearsal: [tn10-covenant-contention-2026-10-29](https://github.com/STP-KAS/tn10-covenant-contention-2026-10-29).
 
 PulseHawk (pulsehawk.io) counts the storm independently from its own nodes. Design inputs from PulseHawk ([pulsehawk.io](https://pulsehawk.io)): 5 attempts/s, parallel families as the headline, sender-off gaps, minute-3 counting, per-lane senders, post-END mempool watch, orphan definition, node-dead rule.
 

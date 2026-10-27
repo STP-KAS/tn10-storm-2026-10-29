@@ -4,7 +4,7 @@
 
 You are **Grok Build** on stp's Windows desk PC. Overview: [GO-MAP.md](GO-MAP.md). Other sides: [GO-BOT.md](GO-BOT.md), [GO-MINI.md](GO-MINI.md). Rules: [README.md](README.md). Design: [plan/PLAN.md](../plan/PLAN.md).
 
-**Not armed until stp sends GO.** Once sent it is locked; changes go in `phase.log` as a deviation.
+**Status: GO** (stp, Tue 27 Oct 2026). Locked; changes go in `phase.log` as a deviation. Time: **START 18:00 UTC (proposed 19:00 UTC, pending Pulse)**; END = START + 1 h. If Pulse agrees, only the clock line and `config.json` times move by +1 h.
 
 ## Your role
 
@@ -35,6 +35,7 @@ Run directory: `<your-folder>\tn10-storm-2026-10-29`.
 ```powershell
 cd <your-folder>\tn10-storm-kit          # tools/storm from this repo + SDK 2.1.0
 $env:STORM_CONFIG = "<your-folder>\tn10-storm-2026-10-29\config.json"   # private, outside any repo
+# one command: .\launch-desk.ps1 -Kit <your-folder>\tn10-storm-kit -Config <your-folder>\tn10-storm-2026-10-29\config.json [-Coordinator | -Takeover]
 Start-Process node -ArgumentList "coordinator.mjs" -WindowStyle Hidden   # main node only
 Start-Process node -ArgumentList "sender.mjs --label desk --node ws://127.0.0.1:17210" -WindowStyle Hidden
 New-Item <your-folder>\tn10-storm-2026-10-29\control\STOP   # stop switch
