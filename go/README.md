@@ -45,7 +45,7 @@ No new attempt is built at or after END.
 
 | Role | Does |
 |---|---|
-| **Coordinator** | Watches the main node's virtual chain; publishes the current outpoint per family; writes `phase.log`; enforces STALL (30 s) and STOP / END |
+| **Coordinator** | Watches the main node's virtual chain; publishes the current outpoint per family; writes `phase.log`; enforces STALL (60 stested 27 Oct, pre-freeze change from 30 s) and STOP / END |
 | **Senders** | One process per node tag (`desk`, `mini`, public names). Each holds its own funding coins. Token bucket at 5 attempts/s during ON steps; nothing during gaps |
 | **Chain reader** | Main node (mini PC when synced; desk until then). Source of winners and hops |
 | **PulseHawk** | Counts the storm independently from its own nodes. Contact through stp only |
@@ -56,7 +56,7 @@ No new attempt is built at or after END.
 2. **90,000-mempool public-node guard.** A public name at or above 90,000 mempool entries is skipped for the rest of the phase.
 3. **Network id.** Every connection aborts unless the network id is `testnet-10`.
 4. **Follow output 0.** Advance only after virtual-chain inclusion of a hop whose output 0 has a covenant binding and the same KAS value. Shape mismatch = stop.
-5. **No child before parent.** Builder never submits a child before its parent is included. STALL at 30 s with no inclusion.
+5. **No child before parent.** Builder never submits a child before its parent is included. STALL at 60 s (tested 27 Oct, pre-freeze change from 30 s) with no inclusion.
 6. **STOP file + hard END.** `control/STOP` or END, whichever first. No self-restart.
 7. **Fee.** One fee rate for every sender, from the main node's normal bucket, floored at 100 sompi/g. Relay fee = rate × max(compute mass, ceil(transient mass / 2)).
 8. **Counts only in git.** No key, seed, address, IP or transaction id in this repo. `submit.jsonl` stays on disk.

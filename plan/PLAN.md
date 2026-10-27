@@ -68,7 +68,7 @@ From the 26 Oct desk dry run (P2W stand-in hop, 1 attempt/s per family, one lane
 
 ### Orphan definition
 
-Written in full at [docs/ORPHAN.md](../docs/ORPHAN.md). Short form: an orphan = a hop attempt whose parent is not yet on the virtual chain; the node answers with an orphan reject and it is counted once, under `rej_orphan`. Our builder never submits a child before its parent is included, and stalls/stops if a mempool ack has no inclusion within 30 s.
+Written in full at [docs/ORPHAN.md](../docs/ORPHAN.md). Short form: an orphan = a hop attempt whose parent is not yet on the virtual chain; the node answers with an orphan reject and it is counted once, under `rej_orphan`. Our builder never submits a child before its parent is included, and stalls/stops if a mempool ack has no inclusion within 60 s (tested 27 Oct, pre-freeze change from 30 s).
 
 ### Post-END mempool watch
 
@@ -110,7 +110,7 @@ A hop is this shape, and every sender uses it:
 - output 1 is the token output (use a value whose committed storage mass is under the 500,000 block storage limit; the 20 Oct rehearsal needed 0.2 KAS because 0.05 KAS measured storage mass 803,963)
 - output 2 is change back to that sender
 
-Do not submit the child before the parent is on the virtual chain. If a mempool acceptance has no virtual-chain inclusion within 30 seconds, write `STALL` and stop.
+Do not submit the child before the parent is on the virtual chain. If a mempool acceptance has no virtual-chain inclusion within 60 seconds (tested 27 Oct, pre-freeze change from 30 s), write `STALL` and stop.
 
 ## Senders
 
@@ -137,7 +137,7 @@ Whichever fires first is the one recorded. No sender restarts itself. An attempt
 
 - A builder pointed at an old launch path would move a covenant this test does not own. The path allow-list is the family set for this phase, and each key is new.
 - Counting a mempool ack as a hop repeats an old mix-up with PulseHawk's block count. Hops move on the virtual chain only.
-- Submitting the next hop before the parent is included produces orphan rejects and can stall the chain of state. The 30 second stall stop is the bound.
+- Submitting the next hop before the parent is included produces orphan rejects and can stall the chain of state. The 60 second stall stop is the bound.
 - Public nodes may reject the large redeem on fee or mass, or may be an older server. A node that rejects the shape is dropped from the tag set. If no public node accepts it, Thursday is desk and mini only, and the phase log says so.
 - One copied transaction can sit in each mempool until a block. That is one entry per node per hop, not one entry per attempt. The 90,000 pause is still on.
 - Remaining cannot run out inside the hour at mint amount 1 and a start of 100,000 per family.

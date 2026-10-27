@@ -53,7 +53,7 @@ As [LOGGING.md](LOGGING.md): `submit.jsonl` (stays on disk), `minute.csv`, `phas
 
 ## Abort rules
 
-Node-dead rule (PulseHawk), network id check, STALL 30 s, shape mismatch, compute mass > 100,000, STOP file, hard END. No self-restart after STOP/END.
+Node-dead rule (PulseHawk), network id check, STALL 60 s (tested 27 Oct, pre-freeze change from 30 s), shape mismatch, compute mass > 100,000, STOP file, hard END. No self-restart after STOP/END.
 
 ## After END
 

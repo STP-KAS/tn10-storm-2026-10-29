@@ -32,7 +32,7 @@ The mini is the **main node, chain reader and coordinator** (genesis for familie
 - [ ] `check-node.ps1` output starts with the HOST/UTC line.
 - [ ] T-2h: NTP offset logged; coordinator can read the virtual chain over localhost.
 - [ ] Funding coins for the `mini` lane, own key: ~1,600 tKAS pre-split into ≥ 100 coins, plus genesis coins for families 1–4 (coordinator), one ≥ 20 tKAS coin per family key; use 4 distinct family keys (shared keys still work since followers match on covenant id, but keep them apart).
-- [ ] `config.json` keys (as rehearsal 1027f): `"keys_file": "<your-folder>\\tn10-storm-dry\\secrets\\mini-keys-4f.txt"` (5 distinct keys, one per line), families 1–4 on **keys 0–3**, `"sender_key": 4` for the `mini` lane. Each family key holds one ≥ 25 tKAS genesis coin.
+- [ ] `config.json` keys (as rehearsal 1027f): `"keys_file": "<your-folder>\tn10-storm-dry\secrets\mini-keys-4f.txt"` (5 distinct keys, one per line), families 1–4 on **keys 0–3**, `"sender_key": 4` for the `mini` lane. Each family key holds one ≥ 25 tKAS genesis coin.
 - [ ] T-5 min: `control/STOP` absent.
 
 ## Start / stop
@@ -68,4 +68,4 @@ As [LOGGING.md](LOGGING.md): `submit.jsonl` (on disk), `minute.csv`, `phase.log`
 
 ## Abort rules
 
-Node-dead rule (PulseHawk), STALL 30 s, shape mismatch, network id check, STOP file, hard END. If the mini node goes dead mid-phase, the desk coordinator takes over (`MAIN node=desk reason=mini_dead`); start commands as in [GO-BUILD.md](GO-BUILD.md#start--stop) with `--label mini`.
+Node-dead rule (PulseHawk), STALL 60 s (tested 27 Oct, pre-freeze change from 30 s), shape mismatch, network id check, STOP file, hard END. If the mini node goes dead mid-phase, the desk coordinator takes over (`MAIN node=desk reason=mini_dead`); start commands as in [GO-BUILD.md](GO-BUILD.md#start--stop) with `--label mini`.

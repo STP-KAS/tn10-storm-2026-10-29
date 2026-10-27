@@ -53,7 +53,7 @@ PulseHawk (pulsehawk.io) counts the storm independently from its own nodes. Desi
 2. **Node-dead rule:** RPC failing, not synced, lag > 60 s, or DAA still 30 s → that sender stops. Failed submit = reject.
 3. **90,000-mempool guard:** public name at ≥ 90,000 entries skipped for the rest of the phase.
 4. **Network id** not `testnet-10` → abort connection.
-5. **STALL:** mempool ack with no inclusion in 30 s → coordinator writes STALL and stops.
+5. **STALL:** mempool ack with no inclusion in 60 s (tested 27 Oct, pre-freeze change from 30 s) → coordinator writes STALL and stops.
 6. **Shape mismatch** on output 0 → stop, don't guess.
 7. Compute mass > 100,000 → do not submit.
 

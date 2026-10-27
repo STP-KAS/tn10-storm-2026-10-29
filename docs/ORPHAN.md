@@ -14,7 +14,7 @@ In `minute.csv` that attempt is counted once, under `rej_orphan`, and nowhere el
 
 Our builder **never submits a child before its parent is included** on the virtual chain. The coordinator publishes the next outpoint only after that inclusion. Senders read that published outpoint; they do not decide the next outpoint from their own submit acknowledgement.
 
-If a mempool acceptance has **no virtual-chain inclusion within 30 seconds**, the coordinator writes `STALL` in the phase log and **stops**. That bound is there so a chain of unconfirmed hops cannot keep growing in the orphan pool.
+If a mempool acceptance has **no virtual-chain inclusion within 60 seconds** (tested 27 Oct, pre-freeze change from 30 s), the coordinator writes `STALL` in the phase log and **stops**. That bound is there so a chain of unconfirmed hops cannot keep growing in the orphan pool.
 
 ## What the 20 Oct rehearsal showed (label A)
 
