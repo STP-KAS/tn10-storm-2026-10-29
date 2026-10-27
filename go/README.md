@@ -24,12 +24,12 @@
 | Coordinator failover | desk | `coordinator.mjs --takeover` (only if mini dies / not synced) | [GO-BUILD](GO-BUILD.md) | GO (standby) |
 | Sender `desk` (lane keys 0–3) | desk | `sender.mjs --label desk` | [GO-BUILD](GO-BUILD.md) | GO |
 | Public senders `vector`, `muon` (alt `boson`) | box | `sender.mjs --source self` | [GO-BOT](GO-BOT.md) | GO |
-| KNS lane (family 0, not counted) | box | `kns-lane.mjs --armed` + kns tn10 create runner | [GO-KNS](GO-KNS.md) | GO (armed at START) |
+| KNS lane (family 0, not counted) | box | `kns-abc-supervise.sh` → `kns-abc-runner.mjs` (kns tn10) | [GO-KNS](GO-KNS.md) | GO (armed at START) |
 | Box CPU miner (modest, public nodes) | box | miner (no txs) | [GO-BOT](GO-BOT.md) | GO, keeps running |
 
 ## Runners
 
-Every planned tx is sent by one of the processes above: genesis and hop following by `coordinator.mjs`, contention hops by `sender.mjs` (one per node tag), KNS names by `kns-lane.mjs`. The `kcc20 storm` builder (via `builder-broker.mjs` on Windows) only builds and signs; it does not send. No GitHub Actions or CI runners are used. One-command launchers per machine: `tools/storm/launch-desk.ps1`, `tools/storm/launch-mini.ps1`, `tools/storm/launch-box.sh` (start at T−5 min; they never touch kaspad).
+Every planned tx is sent by one of the processes above: genesis and hop following by `coordinator.mjs`, contention hops by `sender.mjs` (one per node tag), KNS names by `kns-abc-runner.mjs` under `kns-abc-supervise.sh` (tn10-1984-water repo). The `kcc20 storm` builder (via `builder-broker.mjs` on Windows) only builds and signs; it does not send. No GitHub Actions or CI runners are used. One-command launchers per machine: `tools/storm/launch-desk.ps1`, `tools/storm/launch-mini.ps1`, `tools/storm/launch-box.sh` (KNS included when `KNS_SUPERVISE` is set; start at T−5 min; they never touch kaspad).
 
 ## Single clock
 

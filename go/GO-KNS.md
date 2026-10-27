@@ -25,30 +25,34 @@ Overview: [GO-MAP.md](GO-MAP.md). Box sheet: [GO-BOT.md](GO-BOT.md). Rules: [REA
 
 ## Pre-flight
 
-- [ ] T−24h: kns tn10 confirms the create runner path and that the lane wallet balance covers ≥ 60 min × 60 names at cap.
+- [x] **Confirmed (kns tn10, 27 Oct):** runner is `kns/scripts/kns-abc-runner.mjs` in STP-KAS/tn10-1984-water-2026-10-17, started via `kns/scripts/kns-abc-supervise.sh`, from a fresh run folder, lane config 60/min, max 16 in flight, 1.5× priority fee capped at 1 tKAS/name.
+- [x] **Confirmed (kns tn10, 27 Oct):** budget 3,600 names/h ≈ 130k tKAS (35 tKAS name price + up to 1 tKAS fee each); funded, KNS wallets hold 663,375 tKAS total.
 - [ ] T−1h: `vector` passes the public-node check (2.1.0, `testnet-10`, mempool < 90,000); else `muon`.
-- [ ] T−10 min: dry print (no `--armed`) shows correct from/end/gaps/node.
-- [ ] T−5 min: `control/STOP` absent; arm.
+- [ ] T−10 min: dry run (`--dry-run`) from the fresh run folder shows correct window (START+3 min → END, off in gaps), node and rate.
+- [ ] T−5 min: no `STOP` in the KNS run folder, no `control/STOP` in the storm run folder; arm.
 
 ## Arm
 
+The supervisor restarts the runner on crash/stall (backoff 5/15/45/120 s) and exits on normal stop, refusal (rc 3) or `STOP` in the run folder. Arming needs both `--armed 1` and `KNS_ABC_ARMED=1`.
+
 ```bash
-cd <your-folder>/tn10-storm-kit
-export STORM_CONFIG=<your-folder>/tn10-storm-run/config.json   # private, outside any repo
-node kns-lane.mjs --runner <kns-tn10-folder>/scripts/kns-smoke-create.mjs            # dry print, check it
-nohup node kns-lane.mjs --runner <kns-tn10-folder>/scripts/kns-smoke-create.mjs --armed > kns.out 2>&1 &
+cd <your-folder>/tn10-1984-water-2026-10-17/kns/scripts
+export RUN_DIR=<your-folder>/kns-storm-run       # fresh folder, private (private.json stays here)
+export KNS_CONFIG=<your-folder>/kns-storm-lane.json   # lane config: 60/min, 16 in flight, 1.5x fee capped 1 tKAS
+./kns-abc-supervise.sh --dry-run 3               # dry, check window/rate
+KNS_ABC_ARMED=1 nohup ./kns-abc-supervise.sh --armed 1 > "$RUN_DIR/supervise.out" 2>&1 &
 ```
 
-The lane sleeps until START+3 min and exits at END by itself. Also started by `launch-box.sh` when `KNS_RUNNER` is set.
+Also started by `launch-box.sh` when `KNS_SUPERVISE`, `KNS_RUN_DIR` and `KNS_CONFIG` are set. `tools/storm/kns-lane.mjs` (no `--armed`) stays only as a schedule print / cross-check.
 
 ## Stop / abort
 
-- `touch control/STOP` (shared with all box lanes), or hard END.
+- `touch <kns-run-dir>/STOP` (KNS supervisor stop) and `touch control/STOP` (storm lanes), or hard END.
 - Lane pauses itself on fee above cap; it does not retry at a higher fee.
 - Abort and log if: network id not `testnet-10`, `vector` and `muon` both dead (node-dead rule), reject rate > 50 % for 2 minutes, or kns tn10 asks to stop.
 - No self-restart after STOP/END.
 
 ## Logged
 
-- `logs/minute-kns.csv`: `minute_utc,sent,ok,rej,inflight,paused`.
+- KNS run folder: `runner.out`, `live/heartbeat` and the runner's own logs (private); counts per minute copied to `logs/minute-kns.csv`: `minute_utc,sent,ok,rej,inflight,paused`.
 - `logs/phase.log` tokens (shared file). Counts only in git; names and txids stay private.
