@@ -19,6 +19,13 @@ child.stdout.on("data", (d) => { buf += d; let i; while ((i = buf.indexOf("\n"))
 child.on("exit", (c) => { console.error("builder exit", c); while (waiters.length) waiters.shift()(JSON.stringify({ ok: false, error: "builder exit " + c })); process.exit(1); });
 
 let gate = Promise.resolve();
+function askRaw(cmd, ms = 120000) {
+  return new Promise((res, rej) => {
+    const t = setTimeout(() => rej(new Error("builder timeout")), ms);
+    waiters.push((l) => { clearTimeout(t); res(l); });
+    child.stdin.write(cmd + "\n");
+  });
+}
 function ask(cmd, ms = 120000) {
   const run = () => new Promise((res, rej) => {
     const t = setTimeout(() => rej(new Error("builder timeout")), ms);
@@ -38,7 +45,10 @@ const server = net.createServer((sock) => {
     while ((i = b.indexOf("\n")) >= 0) {
       const line = b.slice(0, i).trim(); b = b.slice(i + 1);
       if (!line) continue;
-      ask(line).then((r) => sock.write(r + "\n")).catch((e) => sock.write(JSON.stringify({ ok: false, error: String(e.message || e) }) + "\n"));
+      // "a && b": run as one unit under the gate (follow + hop from one client must not interleave with another client)
+      const parts = line.split(" && ");
+      const unit = parts.length === 1 ? ask(line) : (gate = gate.then(async () => { let r = ""; for (const c of parts) { r = await askRaw(c); if (!JSON.parse(r).ok) break; } return r; }).catch((e) => JSON.stringify({ ok: false, error: String(e.message || e) })), gate);
+      unit.then((r) => sock.write(r + "\n")).catch((e) => sock.write(JSON.stringify({ ok: false, error: String(e.message || e) }) + "\n"));
     }
   });
 });

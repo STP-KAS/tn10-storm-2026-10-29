@@ -32,7 +32,7 @@ export function startBuilder(errFile) {
     });
   }).catch((e) => { throw e; }));
   const safe = (cmd, ms) => { const p = ask(cmd, ms); chain = p.catch(() => {}); return p; };
-  return withState(safe);
+  return withState(safe, true);
 }
 function startBuilderDirect(errFile) {
   const child = spawn(CFG.builder_exe, ["storm"], { env: { ...process.env, STORM_KEYS: CFG.keys_file, STORM_FEE_RATE: String(CFG.fee_sompi_per_gram || 200), STORM_ROOT: CFG.storm_root || process.env.STORM_ROOT || "" }, stdio: ["pipe", "pipe", "pipe"] });
@@ -57,10 +57,11 @@ function startBuilderDirect(errFile) {
 // nextspk then mixed one family's minter outpoint/spk with another state's remaining -> "PublicMint UTXO script does
 // not match its declared state" in the builder and covenant-binding rejects at the node. Fix: follow + command are one
 // critical section, always re-sent (follow is local and cheap).
-function withState(safe) {
+function withState(safe, broker = false) {
   let lock = Promise.resolve();
   const run = (st, cmd, ms) => {
-    const p = lock.then(async () => {
+    const f = `follow ${st.covenantId} ${st.owner} ${st.txid} ${st.index} ${st.remaining} ${st.spk}`;
+    const p = broker ? lock.then(() => safe(f + " && " + cmd, ms)) : lock.then(async () => {
       await safe(`follow ${st.covenantId} ${st.owner} ${st.txid} ${st.index} ${st.remaining} ${st.spk}`);
       return safe(cmd, ms);
     });
