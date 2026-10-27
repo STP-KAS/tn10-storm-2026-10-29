@@ -45,7 +45,7 @@ No new attempt is built at or after END.
 
 | Role | Does |
 |---|---|
-| **Coordinator** | Watches the main node's virtual chain; publishes the current outpoint per family; writes `phase.log`; enforces STALL (60 stested 27 Oct, pre-freeze change from 30 s) and STOP / END |
+| **Coordinator** | Watches the main node's virtual chain; publishes the current outpoint per family; writes `phase.log`; enforces STALL (60 s, tested 27 Oct, pre-freeze change from 30 s) and STOP / END |
 | **Senders** | One process per node tag (`desk`, `mini`, public names). Each holds its own funding coins. Token bucket at 5 attempts/s during ON steps; nothing during gaps |
 | **Chain reader** | Main node (mini PC when synced; desk until then). Source of winners and hops |
 | **PulseHawk** | Counts the storm independently from its own nodes. Contact through stp only |
