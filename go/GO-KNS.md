@@ -19,7 +19,7 @@ Overview: [GO-MAP.md](GO-MAP.md). Box sheet: [GO-BOT.md](GO-BOT.md). Rules: [REA
 | Rate | 60 names/min |
 | In flight | max 16 |
 | Window | START+3 min → END; off in both 5-minute gaps |
-| Node | `vector` (spare `muon`) |
+| Node | `muon` (spare `boson`) |
 | Fee | 1.5× priority, capped at 1 tKAS/name; **pause, never escalate** |
 | Funding | KNS lane wallet (topped up 26 Oct); own key, not shared with any storm lane |
 
@@ -27,7 +27,7 @@ Overview: [GO-MAP.md](GO-MAP.md). Box sheet: [GO-BOT.md](GO-BOT.md). Rules: [REA
 
 - [x] **Confirmed (kns tn10, 27 Oct):** runner is `kns/scripts/kns-abc-runner.mjs` in STP-KAS/tn10-1984-water-2026-10-17, started via `kns/scripts/kns-abc-supervise.sh`, from a fresh run folder, lane config 60/min, max 16 in flight, 1.5× priority fee capped at 1 tKAS/name.
 - [x] **Confirmed (kns tn10, 27 Oct):** budget 3,600 names/h ≈ 130k tKAS (35 tKAS name price + up to 1 tKAS fee each); funded, KNS wallets hold 663,375 tKAS total.
-- [ ] T−1h: `vector` passes the public-node check (2.1.0, `testnet-10`, mempool < 90,000); else `muon`.
+- [ ] T−1h: `muon` passes the public-node check (2.1.0, `testnet-10`, mempool < 90,000); else `boson`.
 - [ ] T−10 min: dry run (`--dry-run`) from the fresh run folder shows correct window (START+3 min → END, off in gaps), node and rate.
 - [ ] T−5 min: no `STOP` in the KNS run folder, no `control/STOP` in the storm run folder; arm.
 
@@ -52,7 +52,7 @@ Also started by `launch-box.sh` when `KNS_SUPERVISE`, `KNS_RUN_DIR` and `KNS_CON
 
 - `touch <kns-run-dir>/STOP` (KNS supervisor stop) and `touch control/STOP` (storm lanes), or hard END.
 - Lane pauses itself on fee above cap; it does not retry at a higher fee.
-- Abort and log if: network id not `testnet-10`, `vector` and `muon` both dead (node-dead rule), reject rate > 50 % for 2 minutes, or kns tn10 asks to stop.
+- Abort and log if: network id not `testnet-10`, `muon` and `boson` both dead (node-dead rule), reject rate > 50 % for 2 minutes, or kns tn10 asks to stop.
 - No self-restart after STOP/END.
 
 ## Logged

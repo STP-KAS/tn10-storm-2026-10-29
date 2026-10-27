@@ -14,7 +14,7 @@ PulseHawk (pulsehawk.io) counts the storm independently from its own nodes. Desi
 |---|---|---|---|
 | **Mini** | Beelink SER5 Pro (mini PC) | kaspad 2.1.0 from tn10-run-kit, `--utxoindex` | **Main node + coordinator + sender `mini`** over localhost Borsh 17210, once synced |
 | **Build** | stp's desk PC | desk kaspad 2.1.0 `--utxoindex` | Sender `desk`. **Chain reader + coordinator only if mini is not synced** (fallback) |
-| **Bot** | the box (Linux) | none; public TN10 resolver nodes | ≤ 2 public senders (`vector` + `muon` or `boson`), outpoint self-discovery, public-node checks, logging, control watch; KNS lane via kns tn10 |
+| **Bot** | the box (Linux) | none; public TN10 resolver nodes | ≤ 2 public senders (`muon` + `boson`; `vector` alternate only if it passes T-1h), outpoint self-discovery, public-node checks, logging, control watch; KNS lane via kns tn10 |
 | **stp** | desk | — | Sends GO, holds the STOP switch, only contact with PulseHawk |
 | **PulseHawk** | its own nodes | — | Counts the storm independently from its own nodes (through stp only) |
 
@@ -60,8 +60,8 @@ PulseHawk (pulsehawk.io) counts the storm independently from its own nodes. Desi
 
 Settled 26 Oct (details in [plan/PLAN.md](../plan/PLAN.md#lanes-and-senders-decided-26-oct)):
 
-- **Lanes:** one sender per node tag (`desk`, `mini` if main, ≤ 2 public tags: `vector` + one of `muon`/`boson`); every lane contends on every live family at 5 att/s; own funding key per lane. Box check 2026-10-27: `vector`+`muon` both usable (vector slower to connect); `boson` is the alternate if vector flakes.
+- **Lanes:** one sender per node tag (`desk`, `mini` if main, ≤ 2 public tags: `muon` + `boson`, `vector` alternate only if it passes the T-1h check); every lane contends on every live family at 5 att/s; own funding key per lane. Box check 2026-10-27: `muon` and `boson` usable and funded on own keys (1, 2); `vector` failed TLS connect from the box, alternate only if it passes T-1h.
 - **Genesis:** the coordinator on the main node creates families 1–4; covenant ids private only.
 - **Outpoint:** coordinator → desk/mini senders privately; box senders self-discover from their own node (`seen_utc` source=self). Desk coordinator takes over if the mini dies.
-- **KNS lane:** in, as a background lane (`family=0`, sender `kns`, own minute file, not counted), 60 names/min from 18:03, off in gaps, node `vector` (spare `muon`), capped fee exception.
+- **KNS lane:** in, as a background lane (`family=0`, sender `kns`, own minute file, not counted), 60 names/min from 18:03, off in gaps, node `muon` (spare `boson`), capped fee exception.
 - **Mini:** decided at T−2h (synced → main).

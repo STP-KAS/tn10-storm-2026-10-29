@@ -51,7 +51,7 @@ Contention runs at **5 attempts per second per sender** only. Same winners as hi
 
 ### Lanes and senders (decided 26 Oct)
 
-- **One sender per node tag:** `desk`; `mini` (only if the mini is the main node at T−2h); **at most 2 public tags** that pass the mirror check, proposed `vector` plus one of `muon`/`boson` (`boson`, `neutrino` and `electron` count as one backend).
+- **One sender per node tag:** `desk`; `mini` (only if the mini is the main node at T−2h); **at most 2 public tags** that pass the mirror check, decided 27 Oct: `muon` + `boson` (`vector` alternate only if it passes T−1h) (`boson`, `neutrino` and `electron` count as one backend).
 - **Every lane contends on every live family** (1, then 1–2, then 1–4) at 5 attempts/s per family per lane.
 - **Each lane has its own funding key**, pre-split from its own coins, never shared. A lane that shares a funding key with another lane is a stop. Lane tags and rates are written into the START line of `phase.log`.
 - **Genesis owner:** the coordinator on the main node (mini by default, desk if the desk is main) creates the genesis for families 1–4. Covenant ids go only in the private log.
@@ -60,7 +60,7 @@ Contention runs at **5 attempts per second per sender** only. Same winners as hi
 
 ### KNS lane (background, not counted)
 
-A separate background lane: `family=0`, sender `kns`, own minute file (`logs/minute-kns.csv`), **not counted in hops**. 60 names/min, max 16 in flight, off during both 5-minute gaps, not before 18:03 UTC, hard END 19:00 UTC. Node: `vector`, with `muon` as spare, never a tag a covenant sender is using. **Fee: the one explicit exception to the one-fee rule:** capped auto fee at 1.5× priority, max 1 tKAS per name; it pauses instead of escalating. Starts on stp's GO in the kns tn10 chat plus a senders-stable signal from TN10 ops. Obeys STOP, the node-dead rule and the 90,000 guard.
+A separate background lane: `family=0`, sender `kns`, own minute file (`logs/minute-kns.csv`), **not counted in hops**. 60 names/min, max 16 in flight, off during both 5-minute gaps, not before 18:03 UTC, hard END 19:00 UTC. Node: `muon`, with `boson` as spare (changed 27 Oct; deviation: these are also covenant sender tags, because `vector` failed from the box). **Fee: the one explicit exception to the one-fee rule:** capped auto fee at 1.5× priority, max 1 tKAS per name; it pauses instead of escalating. Starts on stp's GO in the kns tn10 chat plus a senders-stable signal from TN10 ops. Obeys STOP, the node-dead rule and the 90,000 guard.
 
 ### Funding per lane (amounts only)
 

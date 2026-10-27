@@ -23,7 +23,7 @@
 | Sender `mini` | mini | `sender.mjs --label mini` | [GO-MINI](GO-MINI.md) | GO |
 | Coordinator failover | desk | `coordinator.mjs --takeover` (only if mini dies / not synced) | [GO-BUILD](GO-BUILD.md) | GO (standby) |
 | Sender `desk` (lane keys 0–3) | desk | `sender.mjs --label desk` | [GO-BUILD](GO-BUILD.md) | GO |
-| Public senders `vector`, `muon` (alt `boson`) | box | `sender.mjs --source self` | [GO-BOT](GO-BOT.md) | GO |
+| Public senders `muon` (key 1), `boson` (key 2) (alt `vector` if it passes T-1h) | box | `sender.mjs --source self` | [GO-BOT](GO-BOT.md) | GO |
 | KNS lane (family 0, not counted) | box | `kns-abc-supervise.sh` → `kns-abc-runner.mjs` (kns tn10) | [GO-KNS](GO-KNS.md) | GO (armed at START) |
 | Box CPU miner (modest, public nodes) | box | miner (no txs) | [GO-BOT](GO-BOT.md) | GO, keeps running |
 

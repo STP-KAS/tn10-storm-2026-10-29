@@ -16,8 +16,8 @@ You are **Grok Bot**, TN10 ops on the box (Linux). Overview: [GO-MAP.md](GO-MAP.
 ## Pre-flight checklist
 
 - [ ] T-24h: each candidate public name: version 2.1.0, network id `testnet-10`, mempool < 90,000. Two names that move together → keep one.
-- [ ] Public tags this phase: prefer `vector` + `muon` (both 2.1.0 / testnet-10 / synced on 2026-10-27 box check; vector connect ~5s). `boson` also passed and is the GO-MAP alternate if vector flakes.
-- [ ] Funding coins per public lane, own key per lane, from the TN10 treasury in small batches (never a full UTXO load). ~1,600 tKAS per lane pre-split into ≥ 100 coins; at most 2 public lanes (`vector` + `muon` or `boson`).
+- [ ] Public tags this phase (decided 27 Oct): `muon` (key 1) + `boson` (key 2). `vector` is the alternate only if it passes the T-1h check (it failed TLS connect from the box on 27 Oct); it then needs an explicit key.
+- [ ] Funding coins per public lane, own key per lane, from the TN10 treasury in small batches (never a full UTXO load). ~1,600 tKAS per lane pre-split into ≥ 100 coins; at most 2 public lanes (`muon` + `boson`; `vector` alternate).
 - [ ] Shape test: one hop-sized tx accepted by each kept name (fee/mass not rejected); a name that rejects the shape is dropped.
 - [ ] T-2h, T-5 min, END+1 min: `python3 tools/ntplog.py --machine box --out <run>/logs/ntp.csv` (box stamps `ts` for public senders).
 - [ ] T-1h: tag set final, written to the START line.
@@ -29,7 +29,7 @@ Run directory: a private box folder outside any repo.
 
 ```bash
 # public sender: tools/storm/sender.mjs --source self (tip-find catchUp on the sender's own node)
-STORM_CONFIG=<run>/config.json KNS_SUPERVISE=<tn10-1984-water>/kns/scripts/kns-abc-supervise.sh KNS_RUN_DIR=<fresh-kns-run> KNS_CONFIG=<fresh-kns-run>/config/storm.json tools/storm/launch-box.sh <vector-url> <muon-url>   # vector + muon + KNS lane ([GO-KNS](GO-KNS.md)); PUB2_LABEL=boson + PUB2_KEY for the alternate (own funded key needed); each lane signs with its own key
+STORM_CONFIG=<run>/config.json KNS_SUPERVISE=<tn10-1984-water>/kns/scripts/kns-abc-supervise.sh KNS_RUN_DIR=<fresh-kns-run> KNS_CONFIG=<fresh-kns-run>/config/storm.json tools/storm/launch-box.sh <muon-url> <boson-url>   # muon (key 1) + boson (key 2) + KNS lane ([GO-KNS](GO-KNS.md)); alternate: PUB1_LABEL/PUB2_LABEL=vector with an explicit PUB1_KEY/PUB2_KEY; each lane signs with its own key
 # box CPU miner: keeps running, modest, public nodes; no txs
 touch control/STOP   # stop switch
 ```
