@@ -14,7 +14,7 @@ The mini is the **main node, chain reader and coordinator** (genesis for familie
 
 ## Node settings (from tn10-run-kit)
 
-- kaspad 2.1.0 at `C:\kaspa\2.1.0`, data `C:\kaspa\data-tn10`, logs `C:\kaspa\logs`, task `TN10 kaspad`.
+- kaspad 2.1.0 at `<your-folder>\kaspa\2.1.0`, data `<your-folder>\kaspa\data-tn10`, logs `<your-folder>\kaspa\logs`, task `TN10 kaspad`.
 - `--testnet --netsuffix=10 --utxoindex`. `--ram-scale=0.6` stays (the mini has about 12 GB of RAM).
 - RPC on this PC only: gRPC 16210, Borsh 17210, JSON 18210. **RPC never public.** P2P 16211 outbound only.
 
@@ -26,7 +26,7 @@ The mini is the **main node, chain reader and coordinator** (genesis for familie
 
 - [ ] `<your-folder>\tn10-run-kit\node\check-node.ps1` shows running yes, **Synced: True**, past median time seconds behind, peers > 0 (paste real output).
 - [ ] Disk free **> 50 GB**.
-- [ ] No `--ram-scale` in the running command line.
+- [ ] `--ram-scale=0.6` present in the running command line (expected, known difference).
 - [ ] Windows Update active hours cover 16:00–20:00 UTC; no pending restart. Power never sleeps.
 - [ ] Grok Build and the Grok Bot app work on the mini.
 - [ ] `check-node.ps1` output starts with the HOST/UTC line.
