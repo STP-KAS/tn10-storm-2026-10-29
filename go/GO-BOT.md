@@ -29,7 +29,7 @@ Run directory: a private box folder outside any repo.
 
 ```bash
 # public sender: tools/storm/sender.mjs --source self (tip-find catchUp on the sender's own node)
-STORM_CONFIG=<run>/config.json KNS_SUPERVISE=<tn10-1984-water>/kns/scripts/kns-abc-supervise.sh KNS_RUN_DIR=<fresh-kns-run> KNS_CONFIG=<fresh-kns-run>/config/storm.json tools/storm/launch-box.sh <vector-url> <muon-url>   # vector + muon + KNS lane ([GO-KNS](GO-KNS.md)); PUB2_LABEL=boson for the alternate
+STORM_CONFIG=<run>/config.json KNS_SUPERVISE=<tn10-1984-water>/kns/scripts/kns-abc-supervise.sh KNS_RUN_DIR=<fresh-kns-run> KNS_CONFIG=<fresh-kns-run>/config/storm.json tools/storm/launch-box.sh <vector-url> <muon-url>   # vector + muon + KNS lane ([GO-KNS](GO-KNS.md)); PUB2_LABEL=boson + PUB2_KEY for the alternate (own funded key needed); each lane signs with its own key
 # box CPU miner: keeps running, modest, public nodes; no txs
 touch control/STOP   # stop switch
 ```
