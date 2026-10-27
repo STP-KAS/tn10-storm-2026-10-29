@@ -109,6 +109,15 @@ while (!stopWhy) {
         const st = { covenantId: f.cur.covenantId, owner: f.cur.owner, txid: norm(e.outpoint.transactionId), index: e.outpoint.index, remaining: f.cur.remaining - 1, spk: f.cur.nextSpk, seq: f.cur.seq + 1, amount: String(e.amount) };
         await publish(f, st, seen);
         pend.push({ family: f.family, txid: st.txid, seen_utc: iso(seen), tries: 0 });
+      } else if (Date.now() - f.lastHop > 5000 && Date.now() - (f.lastResync || 0) > 5000) {
+        // The exact next minter can be spent before we poll it (two hops between polls): the tip moved past nextAddr.
+        // Re-find the tip from the last known state instead of declaring a false STALL.
+        f.lastResync = Date.now();
+        const tip = await catchUp(rpc, B, { ...f.cur, nextSpk: undefined }, 5000).catch(() => null);
+        if (tip && (tip.seq || 0) > (f.cur.seq || 0)) {
+          const seen = Date.now(); console.error(`resync family=${f.family} seq ${f.cur.seq} -> ${tip.seq}`);
+          await publish(f, tip, seen);
+        }
       }
     } catch {}
     const st = stepAt(Date.now());

@@ -31,7 +31,7 @@ The mini is the **main node, chain reader and coordinator** (genesis for familie
 - [ ] Grok Build and the Grok Bot app work on the mini.
 - [ ] `check-node.ps1` output starts with the HOST/UTC line.
 - [ ] T-2h: NTP offset logged; coordinator can read the virtual chain over localhost.
-- [ ] Funding coins for the `mini` lane, own key: ~1,600 tKAS pre-split into ≥ 100 coins, plus genesis coins for families 1–4 (coordinator).
+- [ ] Funding coins for the `mini` lane, own key: ~1,600 tKAS pre-split into ≥ 100 coins, plus genesis coins for families 1–4 (coordinator), one ≥ 20 tKAS coin per family key; use 4 distinct family keys (shared keys still work since followers match on covenant id, but keep them apart).
 - [ ] T-5 min: `control/STOP` absent.
 
 ## Start / stop
