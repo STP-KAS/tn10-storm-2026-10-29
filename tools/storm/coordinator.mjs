@@ -1,61 +1,85 @@
-// coordinator.mjs: follows each family's minter outpoint on the main node's virtual chain, publishes it to the
-// senders (state/family-N.json), stamps seen_utc and the accepting header time, and writes phase.log
-// (MINER, GENESIS, FAMILY_DROP, START, STEP, GAP_START/GAP_END, STALL, STOP). TESTNET-10 ONLY.
+// coordinator.mjs: creates genesis (real covenant via `kcc20 storm`), follows each family's minter on the main
+// node's virtual chain, publishes the outpoint to state/family-N.json, stamps seen_utc and the accepting header
+// time. Phase tokens: MINER, GENESIS, FAMILY_DROP, START, STEP, GAP_*, MAIN, STALL, STOP. TESTNET-10 ONLY.
 import fs from "node:fs";
-import { CFG, P, phase, iso, sleep, to, stepAt, END, T, STOPF, laneScript, connect, writeState, readState, arg } from "./lib.mjs";
-const TAKEOVER = process.argv.includes("--takeover");   // failover: a second coordinator resumes from the chain
+import { CFG, P, phase, iso, sleep, to, stepAt, END, T, STOPF, connect, writeState, readState, arg } from "./lib.mjs";
+import { startBuilder, materialize, spkAddress, keyAddress, nextSpk, catchUp } from "./covenant.mjs";
 
-const HOPS = fs.createWriteStream(P("private", "hops.jsonl"), { flags: "a" });       // private: has txids
-const GEN = P("private", "genesis.log");                                                // private: covenant ids / lane ids
+const TAKEOVER = process.argv.includes("--takeover");
+const HOPS = fs.createWriteStream(P("private", "hops.jsonl"), { flags: "a" });
+const GEN = P("private", "genesis.log");
 const rpc = await connect(CFG.main_node_url);
-const fams = CFG.families.map((f) => ({ ...f, L: laneScript(f.lane_id), cur: null, seenKeys: new Set(), lastHop: Date.now(), live: false }));
-const key = (e) => e.outpoint.transactionId + ":" + e.outpoint.index;
-async function utxos(f) { const r = await to(rpc.getUtxosByAddresses({ addresses: [f.L.address] }), 5000); return (r.entries || r).filter((e) => !e.isCoinbase); }
+const B = startBuilder(P("private", "builder.err"));
+await B.ask("ping", 120000);
 
-// --- genesis stand-in: the family's starting outpoint must be on the virtual chain by family_check_utc
+const fams = CFG.families.map((f) => ({ ...f, cur: null, lastHop: Date.now(), live: false, nextAddr: null }));
+const norm = (s) => String(s).replace(/^0x/, "").toLowerCase();
+
+async function publish(f, st, seen) {
+  const nspk = await nextSpk(B, st); st.nextSpk = nspk;
+  f.cur = st; writeState(f.family, st); f.nextAddr = spkAddress(nspk); f.lastHop = seen || Date.now();
+}
+
+// --- genesis (or takeover resume)
 if (TAKEOVER) {
   phase(`MAIN node=${arg("label", "desk")} reason=${arg("reason", "main_dead")}`);
   for (const f of fams) {
-    const es = await utxos(f).catch(() => []); if (!es.length) continue;
-    es.sort((a, b) => (BigInt(b.blockDaaScore) > BigInt(a.blockDaaScore) ? 1 : -1)); const e = es[0];   // newest = current minter
-    f.cur = { txid: e.outpoint.transactionId, index: e.outpoint.index, amount: BigInt(e.amount), seq: 0 };
-    for (const x of es) f.seenKeys.add(key(x)); writeState(f.family, f.cur); f.live = true;
+    const st = readState(f.family); if (!st || !st.covenantId) { phase(`FAMILY_DROP family=${f.family} reason=no_state`); continue; }
+    const caught = await catchUp(rpc, B, st); await publish(f, caught); f.live = true;
   }
-}
-const famCheck = TAKEOVER ? 0 : T(CFG.family_check_utc);
-while (Date.now() < famCheck - 1000 && !fs.existsSync(STOPF)) await sleep(250);
-for (const f of (TAKEOVER ? [] : fams)) {
-  const es = await utxos(f).catch(() => []);
-  if (!es.length) { phase(`FAMILY_DROP family=${f.family} reason=no_genesis`); continue; }
-  es.sort((a, b) => (BigInt(b.amount) > BigInt(a.amount) ? 1 : -1)); const e = es[0];
-  f.cur = { txid: e.outpoint.transactionId, index: e.outpoint.index, amount: BigInt(e.amount), seq: 0 };
-  for (const x of es) f.seenKeys.add(key(x));
-  writeState(f.family, f.cur); f.live = true;
-  fs.appendFileSync(GEN, `${iso()} family=${f.family} lane_id=${f.lane_id} start_outpoint=${f.cur.txid}:${f.cur.index}\n`);
-  phase(`GENESIS family=${f.family} included`);
+} else {
+  const famCheck = T(CFG.family_check_utc);
+  while (Date.now() < famCheck - 5000 && !fs.existsSync(STOPF)) await sleep(250);
+  for (const f of fams) {
+    try {
+      const key = Number(f.key ?? 0);
+      const addr = keyAddress(key);
+      const bag = await to(rpc.getUtxosByAddresses({ addresses: [addr] }), 8000);
+      const entries = (bag.entries || []).filter((e) => !e.isCoinbase);
+      entries.sort((a, b) => (BigInt(b.amount) > BigInt(a.amount) ? 1 : -1));
+      const fund = entries.find((e) => BigInt(e.amount) >= 5_000_000_000n);   // ≥ 50 tKAS so change is usable
+      if (!fund) { phase(`FAMILY_DROP family=${f.family} reason=no_funding`); continue; }
+      const path = f.launch_path || `launch::storm-2026-10-29-f${f.family}`;
+      const g = await B.ask(`genesis ${key} ${fund.outpoint.transactionId} ${fund.outpoint.index} ${fund.amount} ${path}`, 120000);
+      const gtx = materialize(g.tx);
+      if (norm(gtx.id) !== norm(g.txid)) throw new Error("genesis id mismatch");
+      await to(rpc.submitTransaction({ transaction: gtx, allowOrphan: false }), 15000, "submit");
+      // wait for the minter (output 0) to appear at its P2SH address
+      const minterAddr = spkAddress(g.minterSpk);
+      const end = Date.now() + 60000; let landed = null;
+      while (Date.now() < end) {
+        const u = await rpc.getUtxosByAddresses({ addresses: [minterAddr] });
+        const hit = (u.entries || []).find((e) => norm(e.outpoint.transactionId) === norm(g.txid) && e.outpoint.index === 0);
+        if (hit) { landed = hit; break; }
+        await sleep(250);
+      }
+      if (!landed) { phase(`FAMILY_DROP family=${f.family} reason=no_genesis`); continue; }
+      const st = { covenantId: g.covenantId, owner: g.owner, txid: norm(g.txid), index: 0, remaining: g.remaining, spk: g.minterSpk, seq: 0, amount: String(landed.amount) };
+      await publish(f, st); f.live = true;
+      fs.appendFileSync(GEN, `${iso()} family=${f.family} path=${path} start_outpoint=${st.txid}:0 covenant=${st.covenantId}\n`);
+      phase(`GENESIS family=${f.family} included`);
+    } catch (e) { phase(`FAMILY_DROP family=${f.family} reason=build`); console.error("genesis", f.family, e.message); }
+  }
 }
 if (!fams.some((f) => f.live)) { phase("STOP reason=no_family"); process.exit(2); }
 
-// --- accepting-block lookup via the virtual chain (txid -> accepting block hash), header time cached
 let sink = (await rpc.getBlockDagInfo()).sink; const acc = new Map(); const hdrT = new Map();
 async function pullChain() {
   const r = await to(rpc.getVirtualChainFromBlock({ startHash: sink, includeAcceptedTransactionIds: true }), 5000);
   for (const a of r.acceptedTransactionIds || []) for (const t of a.acceptedTransactionIds) acc.set(t, a.acceptingBlockHash);
   const add = r.addedChainBlockHashes || []; if (add.length) sink = add[add.length - 1];
-  if (acc.size > 200000) { const n = acc.size - 100000; let i = 0; for (const k of acc.keys()) { if (i++ >= n) break; acc.delete(k); } }
 }
 async function headerTime(h) {
   if (hdrT.has(h)) return hdrT.get(h);
   const b = await to(rpc.getBlock({ hash: h, includeTransactions: false }), 5000); const t = Number(b.block.header.timestamp); hdrT.set(h, t); return t;
 }
 
-// --- main loop
 const T0 = T(CFG.schedule[0].from); while (Date.now() < T0 && !fs.existsSync(STOPF)) await sleep(20);
 if (!TAKEOVER) for (const m of CFG.miners || []) phase(`MINER state=${m.state} workers=${m.workers} miner=${m.label}`, T0);
 if (!TAKEOVER) phase(`START senders=${CFG.senders.join(",")} families=${fams.filter((f) => f.live).length} rate=${CFG.schedule[0].rate}`);
 let prevStep = TAKEOVER ? (stepAt(Date.now())?.step ?? null) : null, stopWhy = null, gapOpen = TAKEOVER && prevStep === "gap";
 for (const f of fams) f.lastHop = Date.now();
-const pend = [];   // winners waiting for their accepting block hash
+const pend = [];
 while (!stopWhy) {
   const now = Date.now();
   if (now >= END) { stopWhy = "END"; break; }
@@ -69,19 +93,18 @@ while (!stopWhy) {
   }
   try { await pullChain(); } catch {}
   for (const f of fams) {
-    if (!f.live) continue;
-    let es; try { es = await utxos(f); } catch { continue; }
-    const keys = new Set(es.map(key));
-    if (f.cur && !keys.has(f.cur.txid + ":" + f.cur.index)) {
-      const fresh = es.filter((e) => !f.seenKeys.has(key(e)));
-      if (fresh.length) {
-        const e = fresh[0]; const seen = Date.now();
-        f.cur = { txid: e.outpoint.transactionId, index: e.outpoint.index, amount: BigInt(e.amount), seq: f.cur.seq + 1 };
-        writeState(f.family, f.cur); f.lastHop = seen;
-        pend.push({ family: f.family, txid: f.cur.txid, seen_utc: iso(seen), tries: 0 });
+    if (!f.live || !f.nextAddr) continue;
+    try {
+      const u = await to(rpc.getUtxosByAddresses({ addresses: [f.nextAddr] }), 5000);
+      const es = u.entries || [];
+      if (es.length) {
+        const e = es[0]; const seen = Date.now();
+        if (!f.cur.nextSpk) continue;
+        const st = { covenantId: f.cur.covenantId, owner: f.cur.owner, txid: norm(e.outpoint.transactionId), index: e.outpoint.index, remaining: f.cur.remaining - 1, spk: f.cur.nextSpk, seq: f.cur.seq + 1, amount: String(e.amount) };
+        await publish(f, st, seen);
+        pend.push({ family: f.family, txid: st.txid, seen_utc: iso(seen), tries: 0 });
       }
-    }
-    for (const e of es) f.seenKeys.add(key(e));
+    } catch {}
     const st = stepAt(Date.now());
     const on = st && st.step !== "gap" && f.family <= st.families;
     if (!on) f.lastHop = Date.now();
@@ -91,13 +114,13 @@ while (!stopWhy) {
     const w = pend[i]; const h = acc.get(w.txid); w.tries++;
     if (h || w.tries > 40) {
       let ah = ""; if (h) { try { ah = iso(await headerTime(h)); } catch {} }
-      HOPS.write(JSON.stringify({ family: w.family, txid: w.txid, accept_header_utc: ah, seen_utc: w.seen_utc }) + "\n"); pend.splice(i, 1);
+      HOPS.write(JSON.stringify({ family: w.family, txid: w.txid, accept_header_utc: ah, seen_utc: w.seen_utc, source: "coord" }) + "\n"); pend.splice(i, 1);
     }
   }
   await sleep(CFG.poll_ms || 200);
 }
-for (const w of pend) HOPS.write(JSON.stringify({ family: w.family, txid: w.txid, accept_header_utc: "", seen_utc: w.seen_utc }) + "\n");
+for (const w of pend) HOPS.write(JSON.stringify({ family: w.family, txid: w.txid, accept_header_utc: "", seen_utc: w.seen_utc, source: "coord" }) + "\n");
 if (gapOpen) phase("GAP_END");
 phase(`STOP reason=${stopWhy}`, stopWhy === "END" ? END : Date.now());
-if (stopWhy !== "END") fs.writeFileSync(STOPF, "");   // STALL or STOP stops every sender
-HOPS.end(); await rpc.disconnect().catch(() => {}); process.exit(0);
+if (stopWhy !== "END") fs.writeFileSync(STOPF, "");
+HOPS.end(); try { await B.ask("quit", 3000); } catch {} await rpc.disconnect().catch(() => {}); process.exit(0);

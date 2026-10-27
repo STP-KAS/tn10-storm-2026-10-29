@@ -1,6 +1,6 @@
 // lib.mjs: shared helpers for the TN10 storm sender + coordinator. TESTNET-10 ONLY.
-// Hop shape here is the P2W stand-in from earlier storms (P2SH(push4(id) OP_DROP OP_TRUE), 1-in-1-out, no key),
-// used for dry runs. The covenant hop (reference build, kcc20 public_mint) plugs into buildHop() for Thursday.
+// The real hop is in covenant.mjs (kcc20 public_mint via the `kcc20 storm` builder). The P2W stand-in below is kept
+// only so older dry-run configs still parse; new runs set CFG.builder_exe and never call this.
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";

@@ -1,26 +1,30 @@
-# tools/storm: coordinator, sender, aggregator (TN10 only)
+# tools/storm — TN10 covenant-contention kit
 
-Scripts for the 29 Oct covenant-contention storm. Node 22+ (native WebSocket) and the Kaspa WASM SDK (nodejs build, v2.1.0).
-They never hold keys: the dry-run hop is a keyless anyone-can-spend stand-in (`P2SH(<lane id> OP_DROP OP_TRUE)`, 1-in-1-out).
-The real covenant hop builder replaces `buildHop()` in `lib.mjs`.
+Node 22+ (native WebSocket) or Node 20 + a `websocket` module, Kaspa WASM SDK 2.1.0, and the `kcc20 storm` builder (see [builder/](builder/)).
 
 | File | Role |
 |---|---|
-| `lib.mjs` | config (`STORM_CONFIG` or `./config.json`), phase log, schedule, hop builder, reject-reason tokens, state files |
-| `coordinator.mjs` | GENESIS / FAMILY_DROP at the family check, MINER, START, STEP, GAP_START/GAP_END, STALL, STOP; detects hops and writes the current outpoint per family to `state/`. `--takeover --label <node> --reason <why>` resumes on a second machine from the chain (newest lane UTXO) and logs `MAIN` |
-| `sender.mjs --label <name> --node <wrpc url>` | spends only the published outpoint at the step rate; SENDER_OFF/ON, NODE_SKIP, NODE_DROP |
-| `health.mjs` | abort watch every 10 s: node lag > 10 DAA vs a reference node (3 reads), free RAM < 2 GB, free disk < 50 GB, > 20 rpc rejects → `control/STOP` + `control/ABORT` |
-| `aggregate.mjs` | merges submits into `private/submit.jsonl`, writes `logs/sec.csv` and `logs/minute.csv`, prints checks |
-| `cycle.ps1` | repeated dry runs: fresh family pair per cycle, coordinator kill + takeover in step 2, aggregate per cycle |
+| `lib.mjs` | config (`STORM_CONFIG`), phase log, schedule, reject tokens, state files |
+| `covenant.mjs` | talks to the builder (via the broker), materializes wasm txs, funding pool, catch-up |
+| `builder-broker.mjs` | one `kcc20 storm` process; clients on `127.0.0.1:17310` |
+| `coordinator.mjs` | genesis + follow minter; `--takeover` resumes from state |
+| `sender.mjs --label --node [--source coord\|self] [--key N]` | real hop; `source=self` discovers the outpoint from this sender's own node |
+| `health.mjs` | abort watch: lag >10 DAA, RAM, disk <50 GB, rpc rejects |
+| `aggregate.mjs` | `sec.csv` / `minute.csv` + checks |
+| `fund-split.mjs` | pre-split a key into N coins of ~16 tKAS (never prints the key) |
+| `kns-lane.mjs` | family=0 background lane (60/min, max 16 in flight, 1.5× fee capped 1 tKAS, pause not escalate). **Does not start live** without `--armed` after stp GO |
+| `cycle.ps1` | repeated dry runs with coordinator failover |
 
-Setup: copy the scripts and the SDK to `<your-folder>\tn10-storm-kit`, copy `config.example.json` to the run folder as `config.json`, fill lane ids and times.
-Run: `node coordinator.mjs`, then one `node sender.mjs` per sender; afterwards `node aggregate.mjs`.
+## Dry runs (counts only)
 
-`private/` holds txids and stays local. Only `logs/` (counts, times) is meant to be shared.
+**Stand-in hop (26 Oct):** 5 cycles, failover each time, 0 equality failures — see earlier note in git history.
 
-## Dry run 26 Oct (desk node, keyless stand-in hop, counts only)
+**Real covenant hop (27 Oct, desk, rusty-kaspa 2.1.0):**
+- One family genesis (`launch::storm-2026-10-29-f1b`) included; then 120 s at 1 att/s.
+- sent 117, ok 69, already_spent 37, orphan 11, fee/mass/rpc 0.
+- hops 68 with seen+header; include p50 1150 ms, p95 1691 ms; sec.csv 160/160; END clean.
+- `source=self` check: 75 s, hops 43, same reject shape, source stamped `self`.
 
-5 cycles, each with a fresh family pair, a 90 s step 1, a 30 s gap, a 120 s step 2, and a coordinator kill + `--takeover` 40 s into step 2. Cycles 1–2 ran at 1 att/s per family and cycles 3–5 at 5 att/s.
-In every cycle: 0 equality failures, sec.csv 270/270 rows, no STALL, MAIN and STOP logged after the takeover, and 0 fee/mass/rpc rejects.
-Include p50 1.17–1.24 s and p95 1.83–1.95 s. Node lag vs the reference node was ≤ 4 DAA, and the abort rules never fired.
-Bug found and fixed: on Windows, renaming the state file fails with EPERM while a sender is reading it, which crashed the takeover coordinator. `writeState` now retries.
+Bug found: two `kcc20 storm` processes cannot open `build/public-mint` on Windows (Access denied). Fixed with `builder-broker.mjs`.
+
+`private/` (txids, covenant ids) stays local. Only counts-only logs are shareable after a scan.
