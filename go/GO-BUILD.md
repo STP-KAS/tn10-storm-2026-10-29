@@ -1,15 +1,15 @@
 > **Experimental. We are just trying this.** [Disclaimer](../DISCLAIMER.md) · [Home](../README.md) · [GO rules](README.md) · Kaspa Testnet-10 only.
 
-# GO-BUILD · desk PC · Thu 29 Oct 2026, 18:00–19:00 UTC (19:00–20:00 CET)
+# GO-BUILD · desk PC · Thu 29 Oct 2026, 19:00–20:00 UTC (20:00–21:00 CET)
 
 You are **Grok Build** on stp's Windows desk PC. Overview: [GO-MAP.md](GO-MAP.md). Other sides: [GO-BOT.md](GO-BOT.md), [GO-MINI.md](GO-MINI.md). Rules: [README.md](README.md). Design: [plan/PLAN.md](../plan/PLAN.md).
 
-**Status: GO** (stp, Tue 27 Oct 2026). Locked; changes go in `phase.log` as a deviation. Time: **START 18:00 UTC (proposed 19:00 UTC, pending Pulse)**; END = START + 1 h. If Pulse agrees, only the clock line and `config.json` times move by +1 h.
+**Status: GO** (stp, Tue 27 Oct 2026). Locked; changes go in `phase.log` as a deviation. Time: **START 19:00 UTC, END 20:00 UTC (20:00–21:00 CET), confirmed with PulseHawk 27 Oct** (moved +1 h after the freeze; see the dated change in [GO-MAP](GO-MAP.md#dated-changes)).
 
 ## Your role
 
 - **Sender `desk`**, 5 attempts/s during ON steps, nothing in the gaps.
-- **Fallback chain reader + coordinator** if the mini PC is not synced at T-2h (16:00 UTC). Then you watch the desk node's virtual chain, publish the current outpoint per family, write `phase.log`, enforce STALL / STOP / END. The mini then only monitors.
+- **Fallback chain reader + coordinator** if the mini PC is not synced at T-2h (17:00 UTC). Then you watch the desk node's virtual chain, publish the current outpoint per family, write `phase.log`, enforce STALL / STOP / END. The mini then only monitors.
 
 ## Desk node
 
@@ -23,7 +23,7 @@ You are **Grok Build** on stp's Windows desk PC. Overview: [GO-MAP.md](GO-MAP.md
 
 - [ ] T-24h: node synced, version 2.1.0, network id `testnet-10` (report real output).
 - [ ] Funding coins for the `desk` lane: own key, not shared with any other lane; ~1,600 tKAS pre-split into ≥ 100 coins (PLAN.md, Funding per lane); genesis coins too if the desk is main.
-- [ ] Windows Update active hours cover 16:00–20:00 UTC; no pending restart.
+- [ ] Windows Update active hours cover 17:00–21:00 UTC; no pending restart.
 - [ ] T-2h: NTP check (`w32tm /stripchart` or similar), offset logged.
 - [ ] T-2h: main-node decision read from GO-MAP; if fallback, coordinator armed on the desk node.
 - [ ] T-5 min: `control/STOP` absent; START line ready with tag set and rate.
@@ -42,14 +42,14 @@ New-Item <your-folder>\tn10-storm-2026-10-29\control\STOP   # stop switch
 node aggregate.mjs   # after END: minute.csv, sec.csv, private submit.jsonl
 ```
 
-Senders stop by themselves at 19:00:00Z whatever time they were started.
+Senders stop by themselves at 20:00:00Z whatever time they were started.
 
 ## Logging
 
 - **Optional:** passive hardware logger `tools/hwlog.ps1 -Label desk` from START−30 min to END+30 min. Read-only; does not touch kaspad; node stays untouched until END. Details and specs: [LOGGING.md](LOGGING.md#hwlog-labelcsv--hardware-logger-optional).
 - Logging pre-check: NTP synced to UTC (`w32tm /query /status`, `w32tm /resync`, stripchart vs time.windows.com/pool.ntp.org), offset < ~100 ms; no hostnames/IPs in anything published.
 
-As [LOGGING.md](LOGGING.md): `submit.jsonl` (stays on disk), `minute.csv`, `phase.log` (if coordinator), and `post-end-mempool.csv` for the desk node 19:00–19:15. Reason tokens only, never the raw node sentence.
+As [LOGGING.md](LOGGING.md): `submit.jsonl` (stays on disk), `minute.csv`, `phase.log` (if coordinator), and `post-end-mempool.csv` for the desk node 20:00–20:15. Reason tokens only, never the raw node sentence.
 
 ## Abort rules
 

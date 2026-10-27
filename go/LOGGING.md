@@ -8,7 +8,7 @@ The run directory is outside this repo. Files during the phase: `submit.jsonl` (
 
 One line per attempt, including losers. Fields, in this order:
 
-- `ts` — UTC to the millisecond, e.g. `2026-10-29T18:00:01.234Z`
+- `ts` — UTC to the millisecond, e.g. `2026-10-29T19:00:01.234Z`
 - `sender` — the tag
 - `node` — the same tag
 - `family` — family number (1–4)
@@ -37,23 +37,23 @@ minute_utc,step,family,families,sent,ok,rej_already_spent,rej_orphan,rej_fee,rej
 One short line per event, with the actual UTC second:
 
 ```text
-2026-10-29T16:00:04Z NTP machine=mini offset_ms=125 source=pool.ntp.org
-2026-10-29T17:49:12Z GENESIS family=1 included
-2026-10-29T17:55:00Z FAMILY_DROP family=4 reason=no_genesis
-2026-10-29T18:00:00Z MINER state=on workers=3 miner=box
-2026-10-29T18:00:00Z START senders=desk,mini,muon families=1 rate=5
-2026-10-29T18:00:00Z STEP step=1 families=1 rate=5
-2026-10-29T18:07:31Z NODE_SKIP node=boson reason=mempool_90k
-2026-10-29T18:09:12Z SENDER_OFF sender=desk reason=node_dead
-2026-10-29T18:10:40Z SENDER_ON sender=desk
-2026-10-29T18:15:00Z GAP_START
-2026-10-29T18:20:00Z GAP_END
-2026-10-29T18:20:00Z STEP step=2 families=2 rate=5
-2026-10-29T18:35:00Z GAP_START
-2026-10-29T18:40:00Z GAP_END
-2026-10-29T18:40:00Z STEP step=3a families=3 rate=5
-2026-10-29T18:55:00Z STEP step=3b families=3 rate=5
-2026-10-29T19:00:00Z STOP reason=END
+2026-10-29T17:00:04Z NTP machine=mini offset_ms=125 source=pool.ntp.org
+2026-10-29T18:49:12Z GENESIS family=1 included
+2026-10-29T18:55:00Z FAMILY_DROP family=4 reason=no_genesis
+2026-10-29T19:00:00Z MINER state=on workers=3 miner=box
+2026-10-29T19:00:00Z START senders=desk,mini,muon families=1 rate=5
+2026-10-29T19:00:00Z STEP step=1 families=1 rate=5
+2026-10-29T19:07:31Z NODE_SKIP node=boson reason=mempool_90k
+2026-10-29T19:09:12Z SENDER_OFF sender=desk reason=node_dead
+2026-10-29T19:10:40Z SENDER_ON sender=desk
+2026-10-29T19:15:00Z GAP_START
+2026-10-29T19:20:00Z GAP_END
+2026-10-29T19:20:00Z STEP step=2 families=2 rate=5
+2026-10-29T19:35:00Z GAP_START
+2026-10-29T19:40:00Z GAP_END
+2026-10-29T19:40:00Z STEP step=3a families=3 rate=5
+2026-10-29T19:55:00Z STEP step=3b families=3 rate=5
+2026-10-29T20:00:00Z STOP reason=END
 ```
 
 (Example values only. In this example family 4 was dropped, so step 3 runs 3 families.)
@@ -63,13 +63,13 @@ Fixed tokens, each with the actual UTC second:
 | Token | When |
 |---|---|
 | `START` / `STOP reason=END\|STOP\|STALL\|shape_mismatch` | coordinator began / ended attempts |
-| `STEP step=1\|2\|3a\|3b families=N rate=5` | every step boundary: 18:00, 18:20, 18:40, 18:55 |
-| `GAP_START` / `GAP_END` | 18:15/18:20 and 18:35/18:40 |
+| `STEP step=1\|2\|3a\|3b families=N rate=5` | every step boundary: 19:00, 19:20, 19:40, 19:55 |
+| `GAP_START` / `GAP_END` | 19:15/19:20 and 19:35/19:40 |
 | `SENDER_OFF sender=<label> reason=node_dead\|stop\|error` | a sender stops sending outside a planned gap |
 | `SENDER_ON sender=<label>` | it starts again (never by self-restart) |
 | `NODE_SKIP node=<tag> reason=mempool_90k` | public node at ≥ 90,000 mempool entries, skipped for the rest of the phase |
 | `NODE_DROP node=<tag> reason=redeem_shape` | public node rejects the hop shape, dropped from the tag set |
-| `FAMILY_DROP family=N reason=no_genesis` | genesis missing at 17:55 |
+| `FAMILY_DROP family=N reason=no_genesis` | genesis missing at 18:55 |
 | `GENESIS family=N included` | genesis on the main node's virtual chain. **Family number only**: the covenant id goes in the private log only |
 | `MINER state=on\|off workers=N miner=<label>` | own miner state at T0 and at every change |
 | `NTP machine=<label> offset_ms=N source=<server>` | each `ntp.csv` row, mirrored |
@@ -81,15 +81,15 @@ Fixed tokens, each with the actual UTC second:
 
 | Step | ON window | Counted minutes |
 |---|---|---|
-| 1 | 18:00:00–18:14:59 | **18:03:00–18:14:59** (12 min) |
-| 2 | 18:20:00–18:34:59 | **18:23:00–18:34:59** (12 min) |
-| 3a + 3b | 18:40:00–18:59:59 | **18:43:00–18:59:59** (17 min; 3b is not a new ramp) |
+| 1 | 19:00:00–19:14:59 | **19:03:00–19:14:59** (12 min) |
+| 2 | 19:20:00–19:34:59 | **19:23:00–19:34:59** (12 min) |
+| 3a + 3b | 19:40:00–19:59:59 | **19:43:00–19:59:59** (17 min; 3b is not a new ramp) |
 
 A counted minute is **clean** only when `sec.csv` shows `senders_on = senders_target` for all 60 seconds.
 
 ## `logs/sec.csv`
 
-Counts only. **One row per UTC second from 17:55:00 to 18:59:59 UTC** (3,900 rows), all senders and families summed. Header:
+Counts only. **One row per UTC second from 18:55:00 to 19:59:59 UTC** (3,900 rows), all senders and families summed. Header:
 
 ```text
 utc_second,step,families,senders_target,senders_on,sent,ok
@@ -105,11 +105,11 @@ Header:
 utc,machine,offset_ms,source
 ```
 
-One row per machine that stamps `ts` or `seen_utc` (`desk`, `mini`, `box`), at **T0−2h (16:00 UTC)**, **T0−5 min (17:55 UTC)** and **END+1 min (19:01 UTC)**. Labels only, never hostnames. `offset_ms` uses the NTP / `w32tm` sign as printed (median of 3 samples, in ms), logged as measured: an offset over the 100 ms target is logged as is, not hidden (a known offset can be corrected for). Tools: [`tools/ntplog.ps1`](../tools/ntplog.ps1) (Windows, `w32tm /stripchart`) and [`tools/ntplog.py`](../tools/ntplog.py) (box, SNTP query).
+One row per machine that stamps `ts` or `seen_utc` (`desk`, `mini`, `box`), at **T0−2h (17:00 UTC)**, **T0−5 min (18:55 UTC)** and **END+1 min (20:01 UTC)**. Labels only, never hostnames. `offset_ms` uses the NTP / `w32tm` sign as printed (median of 3 samples, in ms), logged as measured: an offset over the 100 ms target is logged as is, not hidden (a known offset can be corrected for). Tools: [`tools/ntplog.ps1`](../tools/ntplog.ps1) (Windows, `w32tm /stripchart`) and [`tools/ntplog.py`](../tools/ntplog.py) (box, SNTP query).
 
 ## Private log (never pushed)
 
-`private/genesis.log` in the run directory: one line per family with the family number, the covenant id and the genesis inclusion time. **Process:** once each family's genesis is included, and **by 17:55 UTC at the latest**, stp sends PulseHawk the covenant id of each family privately (not through any repo, X post or public channel). PulseHawk keeps only a hash. Covenant ids never appear in this repo.
+`private/genesis.log` in the run directory: one line per family with the family number, the covenant id and the genesis inclusion time. **Process:** once each family's genesis is included, and **by 18:55 UTC at the latest**, stp sends PulseHawk the covenant id of each family privately (not through any repo, X post or public channel). PulseHawk keeps only a hash. Covenant ids never appear in this repo.
 
 ## `logs/post-end-mempool.csv`
 
@@ -133,7 +133,7 @@ PulseHawk (pulsehawk.io) counts the storm independently from its own nodes.
 
 - `-Label` is required (`desk` or `mini`) and is written to the `label` column instead of the computer name. The script never records hostname, IP or username.
 - Before publishing any log, scrub hostnames, IPs and private paths.
-- Runs from **START−30 min to END+30 min** (17:30–19:30 UTC, 18:30–20:30 CET), one instance per PC.
+- Runs from **START−30 min to END+30 min** (18:30–20:30 UTC, 19:30–21:30 CET), one instance per PC.
 - Every 5 s: UTC time, label, total CPU %, available RAM (MB), disk reads/s, writes/s, queue length, kaspad working set (MB), kaspad CPU % (of all cores).
 - Example: `cd <your-folder>\tn10-storm` then `powershell -ExecutionPolicy Bypass -File .\tools\hwlog.ps1 -Label desk -DurationMinutes 120` (label `mini` on the mini).
 

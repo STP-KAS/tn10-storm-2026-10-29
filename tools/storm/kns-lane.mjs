@@ -1,6 +1,6 @@
 // kns-lane.mjs: background KNS lane for the storm (family=0). Does NOT start live until stp says GO.
-// Spec (GO-MAP / PLAN): 60 names/min, max 16 in flight, off in both 5-minute gaps, not before 18:03 UTC,
-// hard END 19:00 UTC, node `vector` (spare `muon`), fee = min(1.5× priority, 1 tKAS/name), pause not escalate.
+// Spec (GO-MAP / PLAN): 60 names/min, max 16 in flight, off in both 5-minute gaps, not before 19:03 UTC,
+// hard END 20:00 UTC, node `vector` (spare `muon`), fee = min(1.5× priority, 1 tKAS/name), pause not escalate.
 // Coordinates with the existing kns tn10 tooling (kns-smoke-create / kns-bulk-create) via a pluggable runner.
 // Usage (dry / armed only): node kns-lane.mjs --config <storm-config> --runner <path-to-create.mjs> [--armed]
 // Without --armed the lane only prints the schedule and exits. TESTNET-10 ONLY.
@@ -23,7 +23,7 @@ for (const d of ["logs", "control", "private"]) fs.mkdirSync(P(d), { recursive: 
 const STOPF = P("control", "STOP");
 const T = (s) => Date.parse(s);
 const END = T(CFG.end_utc);
-const startAt = T(CFG.kns_from_utc || "2026-10-29T18:03:00.000Z");
+const startAt = T(CFG.kns_from_utc || "2026-10-29T19:03:00.000Z");
 const gaps = (CFG.schedule || []).filter((s) => s.step === "gap").map((s) => [T(s.from), T(s.to)]);
 const inGap = (ms) => gaps.some(([a, b]) => ms >= a && ms < b);
 const iso = (ms = Date.now()) => new Date(ms).toISOString();

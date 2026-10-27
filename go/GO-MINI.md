@@ -1,16 +1,16 @@
 > **Experimental. We are just trying this.** [Disclaimer](../DISCLAIMER.md) · [Home](../README.md) · [GO rules](README.md) · Kaspa Testnet-10 only.
 
-# GO-MINI · mini PC node · Thu 29 Oct 2026, 18:00–19:00 UTC (19:00–20:00 CET)
+# GO-MINI · mini PC node · Thu 29 Oct 2026, 19:00–20:00 UTC (20:00–21:00 CET)
 
 The Beelink SER5 Pro mini PC (Ryzen 5 5500U, 16 GB, 480 GB SSD, Windows 11 Pro), node from [tn10-run-kit](https://github.com/STP-KAS/tn10-run-kit) `node/`. Run by Grok Build on the mini itself (no Remote Desktop). stp talks to TN10 ops through the Grok Bot app on the mini; each message shows which machine it came from. Overview: [GO-MAP.md](GO-MAP.md).
 
-**Status: GO** (stp, Tue 27 Oct 2026). Locked; changes go in `phase.log` as a deviation. Time: **START 18:00 UTC (proposed 19:00 UTC, pending Pulse)**; END = START + 1 h. If Pulse agrees, only the clock line and `config.json` times move by +1 h.
+**Status: GO** (stp, Tue 27 Oct 2026). Locked; changes go in `phase.log` as a deviation. Time: **START 19:00 UTC, END 20:00 UTC (20:00–21:00 CET), confirmed with PulseHawk 27 Oct** (moved +1 h after the freeze; see the dated change in [GO-MAP](GO-MAP.md#dated-changes)).
 
 ## Role
 
 The mini is the **main node, chain reader and coordinator** (genesis for families 1–4, outpoint per family, `phase.log`, STALL / STOP / END), **plus sender `mini`** over **localhost Borsh 17210**, as in [GO-MAP.md](GO-MAP.md) and the [lane table](README.md#lanes-and-status). Start all three with `launch-mini.ps1`.
 
-- **Fallback only:** if the mini is not synced at T-2h (16:00 UTC), or its node dies mid-phase, the desk coordinator takes over ([GO-BUILD.md](GO-BUILD.md)), logged as `MAIN node=desk reason=…`. In that case only, the mini runs no sender and no coordinator.
+- **Fallback only:** if the mini is not synced at T-2h (17:00 UTC), or its node dies mid-phase, the desk coordinator takes over ([GO-BUILD.md](GO-BUILD.md)), logged as `MAIN node=desk reason=…`. In that case only, the mini runs no sender and no coordinator.
 
 ## Node settings (from tn10-run-kit)
 
@@ -27,7 +27,7 @@ The mini is the **main node, chain reader and coordinator** (genesis for familie
 - [ ] `<your-folder>\tn10-run-kit\node\check-node.ps1` shows running yes, **Synced: True**, past median time seconds behind, peers > 0 (paste real output).
 - [ ] Disk free **> 50 GB**.
 - [ ] `--ram-scale=0.6` present in the running command line (expected, known difference).
-- [ ] Windows Update active hours cover 16:00–20:00 UTC; no pending restart. Power never sleeps.
+- [ ] Windows Update active hours cover 17:00–21:00 UTC; no pending restart. Power never sleeps.
 - [ ] Grok Build and the Grok Bot app work on the mini.
 - [ ] `check-node.ps1` output starts with the HOST/UTC line.
 - [ ] T-2h: NTP offset logged; coordinator can read the virtual chain over localhost.
@@ -64,7 +64,7 @@ Do not run `stop-node.ps1` on the day unless the node is broken; it kills kaspad
 The mini never touches GitHub (no Git, no GitHub login). It writes its logs to local files. After the run, stp attaches them from the Grok Bot app on the mini to TN10 ops, who checks them, removes IPs and commits them to this repo.
 
 
-As [LOGGING.md](LOGGING.md): `submit.jsonl` (on disk), `minute.csv`, `phase.log` (coordinator), `post-end-mempool.csv` for the mini node 19:00–19:15.
+As [LOGGING.md](LOGGING.md): `submit.jsonl` (on disk), `minute.csv`, `phase.log` (coordinator), `post-end-mempool.csv` for the mini node 20:00–20:15.
 
 ## Abort rules
 

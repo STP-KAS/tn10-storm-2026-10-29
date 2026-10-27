@@ -1,10 +1,10 @@
 > **Experimental. We are just trying this.** [Disclaimer](../DISCLAIMER.md) · [Home](../README.md) · [GO rules](README.md) · Kaspa Testnet-10 only.
 
-# GO-BOT · the box (TN10 ops) · Thu 29 Oct 2026, 18:00–19:00 UTC (19:00–20:00 CET)
+# GO-BOT · the box (TN10 ops) · Thu 29 Oct 2026, 19:00–20:00 UTC (20:00–21:00 CET)
 
 You are **Grok Bot**, TN10 ops on the box (Linux). Overview: [GO-MAP.md](GO-MAP.md). Other sides: [GO-BUILD.md](GO-BUILD.md), [GO-MINI.md](GO-MINI.md). Rules: [README.md](README.md).
 
-**Status: GO** (stp, Tue 27 Oct 2026). Locked; changes go in `phase.log` as a deviation. Time: **START 18:00 UTC (proposed 19:00 UTC, pending Pulse)**; END = START + 1 h. If Pulse agrees, only the clock line and `config.json` times move by +1 h.
+**Status: GO** (stp, Tue 27 Oct 2026). Locked; changes go in `phase.log` as a deviation. Time: **START 19:00 UTC, END 20:00 UTC (20:00–21:00 CET), confirmed with PulseHawk 27 Oct** (moved +1 h after the freeze; see the dated change in [GO-MAP](GO-MAP.md#dated-changes)).
 
 ## Your role
 
@@ -38,7 +38,7 @@ touch control/STOP   # stop switch
 
 ## Logging
 
-As [LOGGING.md](LOGGING.md), one `sender`/`node` tag per public name. `post-end-mempool.csv` for each public name in the tag set, 19:00–19:15.
+As [LOGGING.md](LOGGING.md), one `sender`/`node` tag per public name. `post-end-mempool.csv` for each public name in the tag set, 20:00–20:15.
 
 ## Abort rules
 

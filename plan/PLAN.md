@@ -1,6 +1,6 @@
 > **Experimental. We are just trying this.** [Disclaimer](../DISCLAIMER.md) · [Home](../README.md)
 
-# Plan · Thu 29 Oct 2026, 18:00–19:00 UTC
+# Plan · Thu 29 Oct 2026, 19:00–20:00 UTC
 
 Several senders spend one covenant state output at the same time. Only one spend can win each hop. The next hop spends the output that winner created.
 
@@ -15,10 +15,10 @@ All times UTC. Brussels is CET (UTC+1) on these dates.
 | Moment | UTC | Brussels (CET) |
 |---|---|---|
 | Drop gate | Tue 27 Oct 2026 18:00 | 19:00 |
-| Genesis included by | Thu 29 Oct 17:50 | 18:50 |
-| Phase start (T0) | Thu 29 Oct 18:00 | 19:00 |
-| END | Thu 29 Oct 19:00 | 20:00 |
-| Post-END mempool watch | 19:00–19:15 | 20:00–20:15 |
+| Genesis included by | Thu 29 Oct 18:50 | 19:50 |
+| Phase start (T0) | Thu 29 Oct 19:00 | 20:00 |
+| END | Thu 29 Oct 20:00 | 21:00 |
+| Post-END mempool watch | 20:00–20:15 | 21:00–21:15 |
 
 Frozen plan due by the drop gate. Contact with PulseHawk goes through stp only. PulseHawk (pulsehawk.io) counts the storm independently from its own nodes.
 
@@ -36,18 +36,18 @@ Contention runs at **5 attempts per second per sender** only. Same winners as hi
 
 | Step | UTC window | Covenant families in parallel | Attempts/s per sender | Sender |
 |---|---|---|---|---|
-| 1 | 18:00:00 – 18:14:59.999 | **1** | 5 | ON |
-| gap | 18:15:00 – 18:19:59.999 | — | — | **OFF 5 min** |
-| 2 | 18:20:00 – 18:34:59.999 | **2** | 5 | ON |
-| gap | 18:35:00 – 18:39:59.999 | — | — | **OFF 5 min** |
-| 3a | 18:40:00 – 18:54:59.999 | **4** | 5 | ON |
-| 3b | 18:55:00 – 18:59:59.999 | **4** (hold) | 5 | ON |
+| 1 | 19:00:00 – 19:14:59.999 | **1** | 5 | ON |
+| gap | 19:15:00 – 19:19:59.999 | — | — | **OFF 5 min** |
+| 2 | 19:20:00 – 19:34:59.999 | **2** | 5 | ON |
+| gap | 19:35:00 – 19:39:59.999 | — | — | **OFF 5 min** |
+| 3a | 19:40:00 – 19:54:59.999 | **4** | 5 | ON |
+| 3b | 19:55:00 – 19:59:59.999 | **4** (hold) | 5 | ON |
 
-- **Count from minute 3** of each 15-minute ON step, so ramp-up stays out of the numbers. Counted minutes, exact UTC: **18:03:00–18:14:59**, **18:23:00–18:34:59**, **18:43:00–18:59:59** (3a and 3b together). A counted minute is clean only when all planned senders were on for all 60 seconds (`logs/sec.csv`).
+- **Count from minute 3** of each 15-minute ON step, so ramp-up stays out of the numbers. Counted minutes, exact UTC: **19:03:00–19:14:59**, **19:23:00–19:34:59**, **19:43:00–19:59:59** (3a and 3b together). A counted minute is clean only when all planned senders were on for all 60 seconds (`logs/sec.csv`).
 - **Hold the top step for two phases** (3a and 3b) to get clean peak minutes. 3b is the last 5 minutes before END; together with 3a that is 20 minutes at 4 families.
 - **Main sender OFF for 5 minutes between steps**, so we see how fast the network clears, not only how it holds.
 - Each family is its own genesis on its own launch path. Families do not share a minter outpoint. Total hop rate = sum of per-family hops.
-- Genesis for every family that will run is included before 17:50 UTC. If any required genesis is missing at 17:55 UTC, that family is dropped and the phase log says so (`FAMILY_DROP family=N reason=no_genesis`). The public `GENESIS` line carries the family number only; covenant ids stay in the private log and go to PulseHawk privately from stp by 17:55 UTC. If no family is ready, the phase does not start.
+- Genesis for every family that will run is included before 18:50 UTC. If any required genesis is missing at 18:55 UTC, that family is dropped and the phase log says so (`FAMILY_DROP family=N reason=no_genesis`). The public `GENESIS` line carries the family number only; covenant ids stay in the private log and go to PulseHawk privately from stp by 18:55 UTC. If no family is ready, the phase does not start.
 
 ### Lanes and senders (decided 26 Oct)
 
@@ -60,7 +60,7 @@ Contention runs at **5 attempts per second per sender** only. Same winners as hi
 
 ### KNS lane (background, not counted)
 
-A separate background lane: `family=0`, sender `kns`, own minute file (`logs/minute-kns.csv`), **not counted in hops**. 60 names/min, max 16 in flight, off during both 5-minute gaps, not before 18:03 UTC, hard END 19:00 UTC. Node: `muon`, with `boson` as spare (changed 27 Oct; deviation: these are also covenant sender tags, because `vector` failed from the box). **Fee: the one explicit exception to the one-fee rule:** capped auto fee at 1.5× priority, max 1 tKAS per name; it pauses instead of escalating. Starts on stp's GO in the kns tn10 chat plus a senders-stable signal from TN10 ops. Obeys STOP, the node-dead rule and the 90,000 guard.
+A separate background lane: `family=0`, sender `kns`, own minute file (`logs/minute-kns.csv`), **not counted in hops**. 60 names/min, max 16 in flight, off during both 5-minute gaps, not before 19:03 UTC, hard END 20:00 UTC. Node: `muon`, with `boson` as spare (changed 27 Oct; deviation: these are also covenant sender tags, because `vector` failed from the box). **Fee: the one explicit exception to the one-fee rule:** capped auto fee at 1.5× priority, max 1 tKAS per name; it pauses instead of escalating. Starts on stp's GO in the kns tn10 chat plus a senders-stable signal from TN10 ops. Obeys STOP, the node-dead rule and the 90,000 guard.
 
 ### Funding per lane (amounts only)
 
@@ -120,7 +120,7 @@ The public-node senders run on the box, so the box stamps `ts` for them; `desk` 
 
 ## Logging
 
-The run directory is outside this repo. Columns and files: [go/LOGGING.md](../go/LOGGING.md). After END, the counts-only files listed in LOGGING.md (`minute.csv`, `sec.csv`, `ntp.csv`, `phase.log`, `post-end-mempool.csv`, hwlog CSVs) may be added here only after a scan finds no key, seed, address, IP, transaction id, hostname or user path. `submit.jsonl` and the private genesis log stay on disk. Clocks: `logs/ntp.csv` for desk, mini and box at 16:00, 17:55 and 19:01 UTC; an offset over 100 ms is logged as is.
+The run directory is outside this repo. Columns and files: [go/LOGGING.md](../go/LOGGING.md). After END, the counts-only files listed in LOGGING.md (`minute.csv`, `sec.csv`, `ntp.csv`, `phase.log`, `post-end-mempool.csv`, hwlog CSVs) may be added here only after a scan finds no key, seed, address, IP, transaction id, hostname or user path. `submit.jsonl` and the private genesis log stay on disk. Clocks: `logs/ntp.csv` for desk, mini and box at 17:00, 18:55 and 20:01 UTC; an offset over 100 ms is logged as is.
 
 PulseHawk's count is transactions it sees in blocks. Compare that count with `winners`. `sent` and `ok` are local submit results; every attempt lands in exactly one of `ok` or one `rej_*` column, so `sent = ok + sum(rej_*)` per minute. This plan does not message PulseHawk.
 
@@ -129,7 +129,7 @@ PulseHawk's count is transactions it sees in blocks. Compare that count with `wi
 Two switches, both checked before every attempt.
 
 1. **Stop switch:** a file `control/STOP` in the run directory. Creating it stops every sender. Phase log: `reason=STOP`.
-2. **Hard stop:** END, 2026-10-29T19:00:00.000Z, even if STOP was never created. Phase log: `reason=END`.
+2. **Hard stop:** END, 2026-10-29T20:00:00.000Z, even if STOP was never created. Phase log: `reason=END`.
 
 Whichever fires first is the one recorded. No sender restarts itself. An attempt already on the wire is logged, and nothing new is built. Node-dead rule: a sender stops when its node is dead (RPC failing, not synced, lag over 60 s, or DAA score still for 30 s), logged as `SENDER_OFF sender=<label> reason=node_dead`; a manual restart logs `SENDER_ON sender=<label>`. A failed submit is a reject, never "sent".
 
@@ -147,3 +147,7 @@ Whichever fires first is the one recorded. No sender restarts itself. An attempt
 ## Out of scope
 
 No mainnet. No spend of an existing covenant. No kaspad upgrade. No tag, release, or upstream comment. No sender or coordinator code in this repo (only the passive loggers in `tools/`).
+
+## Dated changes
+
+- 27 Oct 2026, after the 18:00 UTC freeze: START moved 18:00 -> 19:00 UTC (END 19:00 -> 20:00 UTC) at stp's request (his bot usage resets that day), agreed by PulseHawk the same evening (about 19:15 UTC). Covenant ids to PulseHawk by 18:55 UTC. PulseHawk counts 19:03:00–19:14:59, 19:23:00–19:34:59 and 19:43:00–19:59:59 UTC. Only times moved; tools, rates, lanes and families are unchanged and stay exactly as rehearsal 1027f.

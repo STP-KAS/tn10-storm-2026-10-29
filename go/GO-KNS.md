@@ -2,7 +2,7 @@
 
 # GO-KNS · KNS background lane · Thu 29 Oct 2026
 
-**Status: GO** (stp, Tue 27 Oct 2026). Armed at START. Time: **START 18:00 UTC (proposed 19:00 UTC, pending Pulse)**; END = START + 1 h. If Pulse agrees, only `kns_from_utc`, `end_utc` and the gaps in `config.json` move by +1 h.
+**Status: GO** (stp, Tue 27 Oct 2026). Armed at START. Time: **START 19:00 UTC, END 20:00 UTC (20:00–21:00 CET), confirmed with PulseHawk 27 Oct** (moved +1 h after the freeze; see the dated change in [GO-MAP](GO-MAP.md#dated-changes)).
 
 Overview: [GO-MAP.md](GO-MAP.md). Box sheet: [GO-BOT.md](GO-BOT.md). Rules: [README.md](README.md).
 
@@ -35,7 +35,7 @@ Overview: [GO-MAP.md](GO-MAP.md). Box sheet: [GO-BOT.md](GO-BOT.md). Rules: [REA
 
 The supervisor restarts the runner on crash/stall (backoff 5/15/45/120 s) and exits on normal stop, refusal (rc 3) or `STOP` in the run folder. Arming needs `--armed 1`, `KNS_ABC_ARMED=1` and `KNS_SHARED_STOP=<storm run_dir>/control/STOP`.
 
-**Window (set by kns tn10, 27 Oct, matches GO-MAP):** for START 18:00Z it sends 18:03–19:00Z, off 18:15–18:20Z and 18:35–18:40Z, hard END 19:00Z. One value, `schedule.start_utc` in `config/storm.json`, shifts it by +1 h if Pulse agrees.
+**Window (set by kns tn10, 27 Oct, matches GO-MAP):** for START 19:00Z it sends 19:03–20:00Z, off 19:15–19:20Z and 19:35–19:40Z, hard END 20:00Z. Set by one value, `schedule.start_utc` = 2026-10-29T19:00:00Z in `config/storm.json` (moved +1 h on 27 Oct, see [GO-MAP](GO-MAP.md#dated-changes)).
 
 ```bash
 cd <your-folder>/tn10-1984-water-2026-10-17/kns/scripts

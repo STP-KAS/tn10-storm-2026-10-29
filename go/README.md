@@ -2,7 +2,7 @@
 
 # GO · shared rules
 
-**Status: GO** (stp, Tue 27 Oct 2026). Locked; changes go in `phase.log` as a deviation. Time: **START 18:00 UTC (proposed 19:00 UTC, pending Pulse)**; END = START + 1 h. If Pulse agrees, only the clock line and `config.json` times move by +1 h. The drop gate is already met (20 Oct rehearsal, label A). Frozen plan due Tue 27 Oct 2026, 18:00 UTC.
+**Status: GO** (stp, Tue 27 Oct 2026). Locked; changes go in `phase.log` as a deviation. Time: **START 19:00 UTC, END 20:00 UTC (20:00–21:00 CET), confirmed with PulseHawk 27 Oct** (moved +1 h after the freeze; see the dated change in [GO-MAP](GO-MAP.md#dated-changes)). The drop gate is already met (20 Oct rehearsal, label A). Frozen plan due Tue 27 Oct 2026, 18:00 UTC.
 
 ## Run sheets
 
@@ -35,9 +35,9 @@ Every planned tx is sent by one of the processes above: genesis and hop followin
 
 | | UTC | Brussels (CET) |
 |---|---|---|
-| T0 / START | Thu 29 Oct 2026, 18:00 (proposed 19:00, pending Pulse) | 19:00 (proposed 20:00) |
-| END | Thu 29 Oct 2026, 19:00 (proposed 20:00) | 20:00 (proposed 21:00) |
-| Post-END watch | 19:00–19:15 | 20:00–20:15 |
+| T0 / START | Thu 29 Oct 2026, 19:00 (confirmed, moved from 18:00 on 27 Oct) | 20:00 |
+| END | Thu 29 Oct 2026, 20:00 | 21:00 |
+| Post-END watch | 20:00–20:15 | 21:00–21:15 |
 
 No new attempt is built at or after END.
 

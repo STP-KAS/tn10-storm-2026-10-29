@@ -2,7 +2,7 @@
 >
 > **Part of [tn-master](https://github.com/STP-KAS/tn-master)**, the map of every TN10 storm. Named by the [11 Oct naming rule](https://github.com/STP-KAS/tn-master/blob/main/repos/INDEX.md): `tn10-storm-YYYY-MM-DD`.
 
-# tn10-storm-2026-10-29 · Thu 29 Oct, 18:00-19:00 UTC (19:00-20:00 CET): covenant contention, 1 → 2 → 4 families
+# tn10-storm-2026-10-29 · Thu 29 Oct, 19:00-20:00 UTC (20:00-21:00 CET): covenant contention, 1 → 2 → 4 families
 
 **History of every storm: [MASTER.md](https://github.com/STP-KAS/tn-master/blob/main/history/MASTER.md)** (in tn-master).
 
@@ -17,9 +17,9 @@ Times are UTC first. Brussels moved from CEST (UTC+2) to CET (UTC+1) on Sun 25 O
 | | UTC | Brussels (CET) |
 |---|---|---|
 | **Drop gate** | Tue 27 Oct 2026, 18:00 | 19:00 |
-| **START (T0)** | Thu 29 Oct 2026, 18:00 | 19:00 |
-| **END** | Thu 29 Oct 2026, 19:00 | 20:00 |
-| **Post-END mempool watch** | 19:00 to 19:15 | 20:00 to 20:15 |
+| **START (T0)** | Thu 29 Oct 2026, 19:00 | 20:00 |
+| **END** | Thu 29 Oct 2026, 20:00 | 21:00 |
+| **Post-END mempool watch** | 20:00 to 20:15 | 21:00 to 21:15 |
 
 **Drop gate: already met (label A).** The 20 Oct desk rehearsal put a fresh genesis, 1,287 included hops and 68,644 already-spent conflict rejects on Testnet-10, read back from the desk node's virtual chain. Thursday stays on the clock above. Detail: [logs/REHEARSAL-2026-10-20.md](logs/REHEARSAL-2026-10-20.md).
 

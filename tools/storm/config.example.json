@@ -16,13 +16,13 @@
   "families": [
     { "family": 1, "key": 0, "launch_path": "launch::storm-2026-10-29-f1" }
   ],
-  "kns_from_utc": "2026-10-29T18:03:00.000Z",
+  "kns_from_utc": "2026-10-29T19:03:00.000Z",
   "kns_node": "vector",
   "kns_spare": "muon",
-  "sec_from_utc": "2026-10-29T17:59:00.000Z",
-  "family_check_utc": "2026-10-29T17:59:40.000Z",
-  "end_utc": "2026-10-29T19:00:00.000Z",
+  "sec_from_utc": "2026-10-29T18:59:00.000Z",
+  "family_check_utc": "2026-10-29T18:59:40.000Z",
+  "end_utc": "2026-10-29T20:00:00.000Z",
   "schedule": [
-    { "step": "1", "from": "2026-10-29T18:00:00.000Z", "to": "2026-10-29T18:15:00.000Z", "families": 1, "rate": 5 }
+    { "step": "1", "from": "2026-10-29T19:00:00.000Z", "to": "2026-10-29T19:15:00.000Z", "families": 1, "rate": 5 }
   ]
 }

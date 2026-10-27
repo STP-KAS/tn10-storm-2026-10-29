@@ -4,7 +4,7 @@
 
 ## Headline
 
-**Total hop rate vs number of covenant families.** Per ON step, counted minutes only (exact ranges in [go/LOGGING.md](../go/LOGGING.md#counted-minutes-exact-utc): 18:03–18:14, 18:23–18:34, 18:43–18:59 UTC), clean minutes only (`sec.csv`):
+**Total hop rate vs number of covenant families.** Per ON step, counted minutes only (exact ranges in [go/LOGGING.md](../go/LOGGING.md#counted-minutes-exact-utc): 19:03–19:14, 19:23–19:34, 19:43–19:59 UTC), clean minutes only (`sec.csv`):
 
 - hops per second, sum across families
 - hops per second, per family
@@ -34,13 +34,13 @@ Winners per family-minute should match hops per family-minute. Sent and ok will 
 
 ## Per UTC second (`sec.csv`)
 
-`senders_target`, `senders_on`, `sent`, `ok` per second, 17:55–19:00 UTC. A minute is clean only when all planned senders were on for all 60 seconds.
+`senders_target`, `senders_on`, `sent`, `ok` per second, 18:55–20:00 UTC. A minute is clean only when all planned senders were on for all 60 seconds.
 
 ## Cross-check with PulseHawk
 
 PulseHawk (pulsehawk.io) counts the storm independently from its own nodes. It counts transactions accepted in blocks per UTC minute, by block time. Compare its count with our `winners`. Its counter includes TN10 base load (~56 tx/s without us); with the covenant id of each family (sent privately by stp, see [LOGGING.md](../go/LOGGING.md#private-log-never-pushed)) it can count each family on its own nodes. `MINER` lines in `phase.log` mark changes in our own hashrate.
 
-## Post-END (19:00–19:15 UTC)
+## Post-END (20:00–20:15 UTC)
 
 Mempool size on the main node and on each public tag, once per minute. Question: do orphans clear, and how long does that take?
 
