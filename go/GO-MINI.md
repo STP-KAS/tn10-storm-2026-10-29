@@ -8,8 +8,9 @@ The Beelink SER5 Pro mini PC (Ryzen 5 5500U, 16 GB, 480 GB SSD, Windows 11 Pro),
 
 ## Role
 
-- **If synced:** main node, chain reader and coordinator, plus sender `mini` over **localhost Borsh 17210**.
-- **If not synced at T-2h (16:00 UTC):** monitor only. No sender, no coordinator; desk takes over ([GO-BUILD.md](GO-BUILD.md)).
+The mini is the **main node, chain reader and coordinator** (genesis for families 1–4, outpoint per family, `phase.log`, STALL / STOP / END), **plus sender `mini`** over **localhost Borsh 17210**, as in [GO-MAP.md](GO-MAP.md) and the [lane table](README.md#lanes-and-status). Start all three with `launch-mini.ps1`.
+
+- **Fallback only:** if the mini is not synced at T-2h (16:00 UTC), or its node dies mid-phase, the desk coordinator takes over ([GO-BUILD.md](GO-BUILD.md)), logged as `MAIN node=desk reason=…`. In that case only, the mini runs no sender and no coordinator.
 
 ## Node settings (from tn10-run-kit)
 
@@ -57,7 +58,7 @@ Do not run `stop-node.ps1` on the day unless the node is broken; it kills kaspad
 - **Optional:** passive hardware logger `tools/hwlog.ps1 -Label mini` from START−30 min to END+30 min. Read-only; does not touch kaspad; node stays untouched until END. Details and specs: [LOGGING.md](LOGGING.md#hwlog-labelcsv--hardware-logger-optional).
 - Logging pre-check: NTP synced to UTC (`w32tm /query /status`, `w32tm /resync`, stripchart vs time.windows.com/pool.ntp.org), offset < ~100 ms; no hostnames/IPs in anything published.
 
-The mini monitors only and never touches GitHub (no Git, no GitHub login). It writes its logs to local files. After the run, stp attaches them from the Grok Bot app on the mini to TN10 ops, who checks them, removes IPs and commits them to this repo.
+The mini never touches GitHub (no Git, no GitHub login). It writes its logs to local files. After the run, stp attaches them from the Grok Bot app on the mini to TN10 ops, who checks them, removes IPs and commits them to this repo.
 
 
 As [LOGGING.md](LOGGING.md): `submit.jsonl` (on disk), `minute.csv`, `phase.log` (coordinator), `post-end-mempool.csv` for the mini node 19:00–19:15.
