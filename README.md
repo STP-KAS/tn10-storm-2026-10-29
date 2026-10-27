@@ -44,10 +44,10 @@ Kaspa Testnet-10 only. KCC-20 is **Last Call, moving to Final** ([kaspanet/kccs#
 | [plan/METRICS.md](plan/METRICS.md) | What to measure and how; compare with PulseHawk's block count |
 | [go/README.md](go/README.md) | Shared rules, the single clock (T0), roles, how GO works |
 | [go/LOGGING.md](go/LOGGING.md) | Every log file and column |
-| [go/GO-MAP.md](go/GO-MAP.md) | DRAFT GO overview: who does what, timeline, abort rules |
-| [go/GO-BUILD.md](go/GO-BUILD.md) | DRAFT GO run sheet: Build, desk PC |
-| [go/GO-BOT.md](go/GO-BOT.md) | DRAFT GO run sheet: Grok Bot, public nodes |
-| [go/GO-MINI.md](go/GO-MINI.md) | DRAFT GO run sheet: mini PC main node |
+| [go/GO-MAP.md](go/GO-MAP.md) | GO overview: who does what, timeline, abort rules |
+| [go/GO-BUILD.md](go/GO-BUILD.md) | GO run sheet: Build, desk PC |
+| [go/GO-BOT.md](go/GO-BOT.md) | GO run sheet: Grok Bot, public nodes |
+| [go/GO-MINI.md](go/GO-MINI.md) | GO run sheet: mini PC main node |
 | [logs/](logs/README.md) | Rehearsal baseline now; Thursday results after END |
 | [logs/REHEARSAL-2026-10-20.md](logs/REHEARSAL-2026-10-20.md) | Desk rehearsal report (gate evidence, label A) |
 | [logs/rehearsal-2026-10-20.csv](logs/rehearsal-2026-10-20.csv) | Per-minute counts from the rehearsal (counts only) |

@@ -37,7 +37,7 @@ if (TAKEOVER) {
       const bag = await to(rpc.getUtxosByAddresses({ addresses: [addr] }), 8000);
       const entries = (bag.entries || []).filter((e) => !e.isCoinbase);
       entries.sort((a, b) => (BigInt(b.amount) > BigInt(a.amount) ? 1 : -1));
-      const fund = entries.find((e) => BigInt(e.amount) >= 5_000_000_000n);   // ≥ 50 tKAS so change is usable
+      const fund = entries.find((e) => BigInt(e.amount) >= 1_500_000_000n);   // ≥ ~15 tKAS (fits ~16 tKAS pre-split coins)
       if (!fund) { phase(`FAMILY_DROP family=${f.family} reason=no_funding`); continue; }
       const path = f.launch_path || `launch::storm-2026-10-29-f${f.family}`;
       const g = await B.ask(`genesis ${key} ${fund.outpoint.transactionId} ${fund.outpoint.index} ${fund.amount} ${path}`, 120000);

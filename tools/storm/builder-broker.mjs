@@ -9,7 +9,7 @@ import { CFG, P } from "./lib.mjs";
 const PORT = Number(process.env.STORM_BUILDER_PORT || CFG.builder_port || 17310);
 const errFile = P("private", "builder.err");
 const child = spawn(CFG.builder_exe, ["storm"], {
-  env: { ...process.env, STORM_KEYS: CFG.keys_file, STORM_FEE_RATE: String(CFG.fee_sompi_per_gram || 200) },
+  env: { ...process.env, STORM_KEYS: CFG.keys_file, STORM_FEE_RATE: String(CFG.fee_sompi_per_gram || 200), STORM_ROOT: CFG.storm_root || process.env.STORM_ROOT || "" },
   stdio: ["pipe", "pipe", "pipe"],
 });
 process.on("exit", () => { try { child.kill(); } catch {} });
