@@ -9,6 +9,7 @@ cd "$(dirname "$0")"
 RUN=$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.env.STORM_CONFIG)).run_dir)')
 [ -e "$RUN/control/STOP" ] && { echo "control/STOP present; not starting"; exit 1; }
 mkdir -p "$RUN/out"
+export STORM_BUILDER_DIRECT=1   # one builder per sender on Linux (no shared broker follow state)
 lane() { # label key-or-empty default-label default-key url
   local L="$1" K="$2"
   if [ -z "$K" ]; then

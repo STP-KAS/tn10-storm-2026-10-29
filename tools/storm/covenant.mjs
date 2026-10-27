@@ -40,7 +40,7 @@ export function startBuilder(errFile) {
   };
 }
 function startBuilderDirect(errFile) {
-  const child = spawn(CFG.builder_exe, ["storm"], { env: { ...process.env, STORM_KEYS: CFG.keys_file, STORM_FEE_RATE: String(CFG.fee_sompi_per_gram || 200) }, stdio: ["pipe", "pipe", "pipe"] });
+  const child = spawn(CFG.builder_exe, ["storm"], { env: { ...process.env, STORM_KEYS: CFG.keys_file, STORM_FEE_RATE: String(CFG.fee_sompi_per_gram || 200), STORM_ROOT: CFG.storm_root || process.env.STORM_ROOT || "" }, stdio: ["pipe", "pipe", "pipe"] });
   process.on("exit", () => { try { child.kill(); } catch {} });
   if (errFile) child.stderr.on("data", (d) => fs.appendFileSync(errFile, d));
   let buf = ""; const waiters = [];
