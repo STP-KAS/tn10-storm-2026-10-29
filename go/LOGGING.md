@@ -119,9 +119,19 @@ After END, one row per UTC minute for 15 minutes. Counts only. Header:
 minute_utc,node,mempool_size
 ```
 
+## `logs/node-watch-<desk|mini>.csv`
+
+Read-only node watch, one row every 5 s per private node, 18:45–20:20 UTC. Header:
+
+```
+ts_utc,label,rpc_ms,synced,peers,mempool,daa,kaspad_cpu_pct,kaspad_ram_mb,free_ram_mb,probe_ms,err
+```
+
+`ts_utc` is UTC (ISO 8601, `Z`), stamped by that node's own machine (NTP-synced, see `ntp.csv`). Sent to PulseHawk after END with the other files, so a private-node stall inside a counted minute can be marked in his report rather than dropped. `err` is cleared of any hostname or IP before publishing.
+
 ## What may land in this repo after END
 
-`minute.csv`, `sec.csv`, `ntp.csv`, `phase.log`, `post-end-mempool.csv`, `hwlog-desk.csv` and `hwlog-mini.csv` only after a scan finds no key, seed, address, IP, transaction id, hostname or user path. `submit.jsonl` and `private/genesis.log` never.
+`minute.csv`, `sec.csv`, `ntp.csv`, `phase.log`, `post-end-mempool.csv`, `hwlog-desk.csv`, `hwlog-mini.csv`, `node-watch-desk.csv` and `node-watch-mini.csv` only after a scan finds no key, seed, address, IP, transaction id, hostname or user path. `submit.jsonl` and `private/genesis.log` never.
 
 ## `hwlog-<label>.csv` · hardware logger (OPTIONAL)
 

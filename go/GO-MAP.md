@@ -70,6 +70,8 @@ Settled 26 Oct (details in [plan/PLAN.md](../plan/PLAN.md#lanes-and-senders-deci
 
 ## Dated changes
 
+- 28 Oct 2026, after the freeze, at PulseHawk's request: `node-watch-desk.csv` and `node-watch-mini.csv` (UTC timestamps) are added to the files sent after END (see LOGGING.md), so a private-node stall inside a counted minute is marked, not dropped. Logging only; nothing changes in the run.
+
 - 27 Oct 2026, after the freeze: added a read-only `node-watch` on desk and mini, every 5 s, 18:45–20:20 UTC Thursday, logging RPC latency, isSynced, peers, mempool, DAA score, kaspad CPU and RAM, and reachability to `logs/node-watch-<desk|mini>.csv`. It reads only and does not change senders, coordinator, rates or kaspad. Reason: a 27 Oct test saw both private nodes marked dead in the same second.
 
 - 27 Oct 2026, after the 18:00 UTC freeze: START moved 18:00 -> 19:00 UTC (END 19:00 -> 20:00 UTC) at stp's request (his bot usage resets that day), agreed by PulseHawk the same evening (about 19:15 UTC). Covenant ids to PulseHawk by 18:55 UTC. PulseHawk counts 19:03:00–19:14:59, 19:23:00–19:34:59 and 19:43:00–19:59:59 UTC. Only times moved; tools, rates, lanes and families are unchanged and stay exactly as rehearsal 1027f.
