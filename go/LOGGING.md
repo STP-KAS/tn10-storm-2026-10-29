@@ -119,6 +119,10 @@ After END, one row per UTC minute for 15 minutes. Counts only. Header:
 minute_utc,node,mempool_size
 ```
 
+## `logs/node-recovery-<desk|mini>.csv`
+
+The same read-only watch and header as node-watch below, from 20:20 UTC Thursday. It writes every 5 s until the node is back (synced, mempool at or below its 18:45 level, kaspad CPU and RAM within 10% of the 18:45 values, held for 10 min), then every 60 s until mining starts on the mini (Fri 30 Oct around 20:30 UTC). The recovery time for each node goes in the post-END notes.
+
 ## `logs/node-watch-<desk|mini>.csv`
 
 Read-only node watch, one row every 5 s per private node, 18:45–20:20 UTC. Header:
@@ -131,7 +135,7 @@ ts_utc,label,rpc_ms,synced,peers,mempool,daa,kaspad_cpu_pct,kaspad_ram_mb,free_r
 
 ## What may land in this repo after END
 
-`minute.csv`, `sec.csv`, `ntp.csv`, `phase.log`, `post-end-mempool.csv`, `hwlog-desk.csv`, `hwlog-mini.csv`, `node-watch-desk.csv` and `node-watch-mini.csv` only after a scan finds no key, seed, address, IP, transaction id, hostname or user path. `submit.jsonl` and `private/genesis.log` never.
+`minute.csv`, `sec.csv`, `ntp.csv`, `phase.log`, `post-end-mempool.csv`, `hwlog-desk.csv`, `hwlog-mini.csv`, `node-watch-desk.csv`, `node-watch-mini.csv`, `node-recovery-desk.csv` and `node-recovery-mini.csv` only after a scan finds no key, seed, address, IP, transaction id, hostname or user path. `submit.jsonl` and `private/genesis.log` never.
 
 ## `hwlog-<label>.csv` · hardware logger (OPTIONAL)
 

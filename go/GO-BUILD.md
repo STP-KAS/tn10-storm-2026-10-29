@@ -27,6 +27,7 @@ You are **Grok Build** on stp's Windows desk PC. Overview: [GO-MAP.md](GO-MAP.md
 - [ ] T-2h: NTP check (`w32tm /stripchart` or similar), offset logged.
 - [ ] T-2h: main-node decision read from GO-MAP; if fallback, coordinator armed on the desk node.
 - [ ] 18:45 UTC: read-only `node-watch` running on the desk (every 5 s to 20:20, `logs/node-watch-desk.csv`); see GO-MAP dated changes.
+- [ ] 20:20 UTC: node-watch continues as the recovery watch (`logs/node-recovery-desk.csv`) until the node is back; see GO-MAP dated changes.
 - [ ] T-5 min: `control/STOP` absent; START line ready with tag set and rate.
 
 ## Start / stop

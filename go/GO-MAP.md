@@ -33,6 +33,7 @@ PulseHawk (pulsehawk.io) counts the storm independently from its own nodes. Desi
 | Thu 18:00 (T-1h) | 19:00 | Public-node check (version 2.1.0, network id testnet-10, mempool < 90,000, drop mirrors). Tag set written |
 | Thu 18:30 | 19:30 | Genesis submits per family (4 families, each own key + launch path) |
 | Thu 18:45 | 19:45 | Read-only `node-watch` starts on desk and mini (every 5 s, until 20:20); reads only, no effect on lanes |
+| Thu 20:20 | 21:20 | node-watch continues as the recovery watch (`node-recovery-<desk|mini>.csv`) until both nodes are back; no mining on the mini until Fri 30 Oct |
 | Thu **18:50** | 19:50 | Every genesis included on the main node's virtual chain |
 | Thu 18:51 | 19:51 | **State handoff:** on the mini `node handoff.mjs export > handoff.json` (chain-public: covenant id, owner pubkey, minter outpoint; no keys); copy to desk + box run folders; there `node handoff.mjs import handoff.json` → `state/family-N.json`. Remote `--source self` senders idle until it is there |
 | Thu 18:55 | 19:55 | Missing genesis → family dropped, logged. `control/STOP` confirmed absent on every side |
@@ -70,6 +71,7 @@ Settled 26 Oct (details in [plan/PLAN.md](../plan/PLAN.md#lanes-and-senders-deci
 
 ## Dated changes
 
+- 28 Oct 2026, after the freeze, stp's call: after END both private nodes are left alone to recover, with no mining on the mini until Fri 30 Oct around 20:30 UTC. From 20:20 UTC the same read-only node-watch writes to `logs/node-recovery-<desk|mini>.csv` (same header), every 5 s until a node counts as back, then every 60 s until mining starts. A node counts as back when it is synced, its mempool is at or below its 18:45 level, its kaspad CPU and RAM are within 10% of the 18:45 values, and all of this has held for 10 min. The recovery time for desk and mini is recorded in the post-END notes. Logging only; nothing changes in the run.
 - 28 Oct 2026, after the freeze, at PulseHawk's request: `node-watch-desk.csv` and `node-watch-mini.csv` (UTC timestamps) are added to the files sent after END (see LOGGING.md), so a private-node stall inside a counted minute is marked, not dropped. Logging only; nothing changes in the run.
 
 - 27 Oct 2026, after the freeze: added a read-only `node-watch` on desk and mini, every 5 s, 18:45–20:20 UTC Thursday, logging RPC latency, isSynced, peers, mempool, DAA score, kaspad CPU and RAM, and reachability to `logs/node-watch-<desk|mini>.csv`. It reads only and does not change senders, coordinator, rates or kaspad. Reason: a 27 Oct test saw both private nodes marked dead in the same second.

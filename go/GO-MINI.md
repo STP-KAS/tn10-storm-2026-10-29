@@ -34,6 +34,7 @@ The mini is the **main node, chain reader and coordinator** (genesis for familie
 - [ ] Funding coins for the `mini` lane, own key: ~1,600 tKAS pre-split into ≥ 100 coins, plus genesis coins for families 1–4 (coordinator), one ≥ 20 tKAS coin per family key; use 4 distinct family keys (shared keys still work since followers match on covenant id, but keep them apart).
 - [ ] `config.json` keys (as rehearsal 1027f): `"keys_file": "<your-folder>\tn10-storm-dry\secrets\mini-keys-4f.txt"` (5 distinct keys, one per line), families 1–4 on **keys 0–3**, `"sender_key": 4` for the `mini` lane. Each family key holds one ≥ 25 tKAS genesis coin.
 - [ ] 18:45 UTC: read-only `node-watch` running on the mini (every 5 s to 20:20, `logs/node-watch-mini.csv`); see GO-MAP dated changes.
+- [ ] 20:20 UTC: node-watch continues as the recovery watch (`logs/node-recovery-mini.csv`) until the node is back; see GO-MAP dated changes.
 - [ ] T-5 min: `control/STOP` absent.
 
 ## Start / stop
