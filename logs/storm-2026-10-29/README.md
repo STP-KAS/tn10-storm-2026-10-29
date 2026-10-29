@@ -6,9 +6,9 @@ Testnet-10 only. Main node and coordinator: mini. Files are labelled by source (
 `covenant-id-sha256.csv`: SHA-256 of each family's covenant id, taken as the lowercase 64-char hex string (UTF-8, no newline).
 
 ## Files
-minute.csv, sec.csv, phase-{mini,desk,box}.log, ntp-{mini,desk,box}.csv, post-end-mempool-{desk,box}.csv, hwlog-{desk,mini}.csv, node-watch-{desk,mini}.csv, covenant-id-sha256.csv.
+minute.csv, sec.csv, phase-{mini,desk,box}.log, ntp-{mini,desk,box}.csv, post-end-mempool-{desk,box}.csv, hwlog-{desk,mini}.csv, node-watch-{desk,mini}.csv, node-recovery-desk.csv, covenant-id-sha256.csv.
 
-Not included yet: `post-end-mempool-mini.csv` (not written on the mini), `node-recovery-{desk,mini}.csv` (the watch logs end at ~20:13Z, before the 20:20Z split; nothing to publish yet), mini `ntp.csv` has only the 18:08Z row (18:55Z and 20:01Z not taken).
+Not included yet: `post-end-mempool-mini.csv` (not written on the mini), `node-recovery-mini.csv` is still absent. `node-recovery-desk.csv` starts at 20:20Z. Desk node-watch runs 18:45-20:20Z and desk hwlog runs 18:30-20:30Z, mini `ntp.csv` has only the 18:08Z row (18:55Z and 20:01Z not taken).
 
 ## Deviations (from phase.log)
 - Genesis was in a block on time (18:59:36–38Z); START 19:00Z, END 20:00Z on the mini.
