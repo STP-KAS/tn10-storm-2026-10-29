@@ -28,3 +28,7 @@ About 4x with 4 chains; a single chain stays under 1 hop/s (20 Oct baseline ~0.7
 2. Move the public-node senders to the desk.
 3. Fix the clocks on the box and the mini.
 4. Run 4 families at a higher rate, and try 8 families, with every sender confirmed live from the first second.
+
+## Node load (added 29 Oct, 21:39 CET)
+
+This was not a heavy load. Total throughput peaked at about 3.24 hops/s, the mempool peaked at 61 (desk) and 58 (mini), and RPC calls stayed under 17 ms inside the counted minutes. A clean result from both nodes is therefore the expected result at this load. It does not show where the nodes' limits are. Finding those needs the higher-load tests listed above (4 families at a higher rate, and 8 families).
