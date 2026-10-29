@@ -1,0 +1,34 @@
+2026-10-29T18:08:06Z NTP machine=mini offset_ms=50.2 source=pool.ntp.org
+2026-10-29T18:10:07Z MAIN node=mini reason=synced
+2026-10-29T18:10:07Z DEVIATION item=main_decision_late scheduled=17:00Z
+2026-10-29T18:10:07Z DEVIATION item=w32time_unsynced resync=access_denied stratum=0 offset_ms=50.2
+2026-10-29T18:10:07Z DEVIATION item=reboot_pending source=cbs_and_pending_rename action=left_running
+2026-10-29T18:10:07Z DEVIATION item=kaspad_task_absent node=already_running_flags_ok
+2026-10-29T18:10:07Z DEVIATION item=sender_mini_funding total_tkas=1163.92 coins=102 target_tkas=1600 max_coin_tkas=14.75
+2026-10-29T18:10:07Z DEVIATION item=genesis_clock config_submit=18:59:35Z map_submit=18:30Z
+2026-10-29T18:10:07Z DEVIATION item=sec_from config=18:59:00Z spec=18:55:00Z
+2026-10-29T18:10:07Z DEVIATION item=past_median_age_s value=111 synced=true
+2026-10-29T18:10:07Z DEVIATION item=sender_self_resume note=resumes_after_node_dead_unless_HOLD
+2026-10-29T18:10:07Z DEVIATION item=node_dead_lag note=checks_not_synced_daa_still_30s_rpc
+2026-10-29T18:10:07Z DEVIATION item=miner_line note=config_miners_empty
+2026-10-29T18:46:05Z NODE_WATCH label=mini every_s=5 until=20:20Z
+2026-10-29T18:46:05Z DEVIATION item=node_watch_flush note=stdout_set_blocking
+2026-10-29T18:46:05Z DEVIATION item=probe_ms note=column_blank_no_public_probe
+2026-10-29T18:55:44Z LAUNCH broker=up coordinator=up sender=mini started=18:48:14Z
+2026-10-29T18:55:44Z DEVIATION item=launch_early started=18:48:14Z sheet=18:55Z
+2026-10-29T18:59:36Z GENESIS family=1 included
+2026-10-29T18:59:37Z GENESIS family=2 included
+2026-10-29T18:59:38Z GENESIS family=3 included
+2026-10-29T18:59:38Z GENESIS family=4 included
+2026-10-29T19:00:00Z START senders=mini,desk,muon,boson families=4 rate=5
+2026-10-29T19:00:00Z STEP step=1 families=1 rate=5
+2026-10-29T19:01:20Z HANDOFF families=4 file=local
+2026-10-29T19:01:20Z DEVIATION item=handoff_copy note=no_route_to_desk_or_box
+2026-10-29T19:15:00Z GAP_START
+2026-10-29T19:20:00Z GAP_END
+2026-10-29T19:20:00Z STEP step=2 families=2 rate=5
+2026-10-29T19:35:00Z GAP_START
+2026-10-29T19:40:00Z GAP_END
+2026-10-29T19:40:00Z STEP step=3a families=4 rate=5
+2026-10-29T19:55:00Z STEP step=3b families=4 rate=5
+2026-10-29T20:00:00Z STOP reason=END

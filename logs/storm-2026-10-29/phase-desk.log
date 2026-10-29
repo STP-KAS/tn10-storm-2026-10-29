@@ -1,0 +1,4 @@
+2026-10-29T18:04:59Z NTP machine=desk offset_ms=-80.2 source=pool.ntp.org
+2026-10-29T18:37:25Z MAIN node=mini reason=stp_confirmed_ready
+2026-10-29T18:55:04Z NTP machine=desk offset_ms=-84.5 source=pool.ntp.org
+2026-10-29T20:01:05Z NTP machine=desk offset_ms=-87.3 source=pool.ntp.org

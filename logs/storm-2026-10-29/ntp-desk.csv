@@ -1,0 +1,4 @@
+utc,machine,offset_ms,source
+2026-10-29T18:04:59Z,desk,-80.2,pool.ntp.org
+2026-10-29T18:55:04Z,desk,-84.5,pool.ntp.org
+2026-10-29T20:01:05Z,desk,-87.3,pool.ntp.org
