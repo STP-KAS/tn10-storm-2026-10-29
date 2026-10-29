@@ -32,3 +32,7 @@ About 4x with 4 chains; a single chain stays under 1 hop/s (20 Oct baseline ~0.7
 ## Node load (added 29 Oct, 21:39 CET)
 
 This was not a heavy load. Total throughput peaked at about 3.24 hops/s, the mempool peaked at 61 (desk) and 58 (mini), and RPC calls stayed under 17 ms inside the counted minutes. A clean result from both nodes is therefore the expected result at this load. It does not show where the nodes' limits are. Finding those needs the higher-load tests listed above (4 families at a higher rate, and 8 families).
+
+## Overall score (added 29 Oct, 23:22 CET)
+
+Operator's own score: 6/10. The result itself is clean: throughput scaled from 0.81 hops/s (1 family) to 1.96 (2) to 3.24 (4), counted independently, and both nodes stayed healthy. Points were lost on execution. The handoff copy failed, the covenant ids and the KNS lane were late, the box senders only ran 19:24–19:33 UTC, the boson lane landed 55 of 5,314 attempts, and no counted second had all four senders active. The load was light, so the run does not show where the nodes' limits are. To score 8–9 next time: copy the handoff automatically and have senders refuse to start without it, run the public-node senders from the desk, fix the clocks, then run 4 families at a higher rate and try 8 families.
